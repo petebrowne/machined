@@ -16,4 +16,12 @@ describe Machined::Sprocket do
       sprocket.root.should == Pathname.new("spec/machined").expand_path.to_s
     end
   end
+  
+  describe "#context_class" do
+    it "subclasses Machined::Context" do
+      sprocket = Machined::Sprocket.new machined
+      sprocket.context_class.should < Sprockets::Context
+      sprocket.context_class.should < Machined::Context
+    end
+  end
 end

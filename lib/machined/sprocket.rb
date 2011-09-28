@@ -23,6 +23,7 @@ module Machined
       @config = DEFAULT_OPTIONS.dup.merge options
       super config[:root]
       @machined = machined
+      @context_class = Class.new Context
     end
   end
 end
