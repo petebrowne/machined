@@ -1,5 +1,6 @@
 require "machined/version"
 
 module Machined
-  # Your code goes here...
+  autoload :Environment, "machined/environment"
+  autoload :Sprocket,    "machined/sprocket"
 end
