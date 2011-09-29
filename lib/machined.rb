@@ -5,4 +5,5 @@ module Machined
   autoload :Environment,   "machined/environment"
   autoload :LocalsHelpers, "machined/locals_helpers"
   autoload :Sprocket,      "machined/sprocket"
+  autoload :Utils,         "machined/utils"
 end

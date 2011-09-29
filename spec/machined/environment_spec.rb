@@ -50,4 +50,66 @@ describe Machined::Environment do
       machined.sprockets.first.should be(sprocket)
     end
   end
+  
+  describe "#assets" do
+    it "appends the standard asset paths" do
+      within_construct do |c|
+        c.directory "app/assets/images"
+        c.directory "app/assets/javascripts"
+        c.directory "app/assets/stylesheets"
+        c.directory "vendor/assets/images"
+        c.directory "vendor/assets/javascripts"
+        c.directory "vendor/assets/stylesheets"
+        
+        machined.assets.paths.should == [
+          "vendor/assets/images",
+          "vendor/assets/javascripts",
+          "vendor/assets/stylesheets",
+          "app/assets/images",
+          "app/assets/javascripts",
+          "app/assets/stylesheets"
+        ].map { |path| c.join(path).to_s }
+      end
+    end
+    
+    it "appends the available asset paths" do
+      within_construct do |c|
+        c.directory "app/assets/css"
+        c.directory "app/assets/img"
+        c.directory "app/assets/js"
+        c.directory "app/assets/plugins"
+        
+        machined.assets.paths.should == [
+          "app/assets/css",
+          "app/assets/img",
+          "app/assets/js",
+          "app/assets/plugins"
+        ].map { |path| c.join(path).to_s }
+      end
+    end
+  end
+  
+  describe "#pages" do
+    it "appends the pages path" do
+      within_construct do |c|
+        c.directory "app/pages"
+        
+        machined.pages.paths.should == [
+          "app/pages"
+        ].map { |path| c.join(path).to_s }
+      end
+    end
+  end
+  
+  describe "#views" do
+    it "appends the views path" do
+      within_construct do |c|
+        c.directory "app/views"
+        
+        machined.views.paths.should == [
+          "app/views"
+        ].map { |path| c.join(path).to_s }
+      end
+    end
+  end
 end
