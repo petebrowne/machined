@@ -6,9 +6,10 @@ module Machined
     # Default options for a Machined environment.
     DEFAULT_OPTIONS = {
       :root        => ".",
-      :asset_paths => %w(vendor/assets lib/assets app/assets),
-      :pages_path  => "app/pages",
-      :views_path  => "app/views"
+      :asset_paths => %w(vendor/assets lib/assets assets),
+      :pages_path  => "pages",
+      :views_path  => "views",
+      :layout      => "main"
     }.freeze
     
     # The global configuration for the Machined
@@ -41,13 +42,16 @@ module Machined
       append_sprocket :pages do |pages|
         pages_path = Utils.join(root, config[:pages_path])
         pages.append_path(pages_path) if pages_path.exist?
-        pages.register_mime_type "text/html", ".html"
+        
+        pages.register_mime_type     "text/html", ".html"
+        pages.register_postprocessor "text/html", LayoutProcessor
       end
       
       append_sprocket :views do |views|
         views_path = Utils.join(root, config[:views_path])
         views.append_path(views_path) if views_path.exist?
-        pages.register_mime_type "text/html", ".html"
+        
+        views.register_mime_type "text/html", ".html"
       end
     end
     

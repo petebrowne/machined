@@ -24,8 +24,24 @@ module Machined
       @locals ||= ActiveSupport::HashWithIndifferentAccess.new
     end
     
+    # Returns true if the given +name+ has been set as a local
+    # variable.
+    def has_local?(name)
+      locals.key? name
+    end
+    
+    # Returns the default layout, unless overridden by
+    # the YAML front matter.
+    def layout
+      if has_local?(:layout)
+        locals[:layout]
+      else
+        machined.config[:layout]
+      end
+    end
+    
     def method_missing(method, *args, &block) # :nodoc:
-      if args.empty? && locals.key?(method)
+      if args.empty? && has_local?(method)
         locals[method]
       else
         super
@@ -33,7 +49,7 @@ module Machined
     end
     
     def respond_to?(method) # :nodoc:
-      super or locals.key?(method)
+      super or has_local?(method)
     end
   end
 end

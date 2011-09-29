@@ -1,8 +1,6 @@
 require "spec_helper"
 
 describe Machined::Environment do
-  let(:machined) { Machined::Environment.new }
-  
   describe "#append_sprocket" do
     it "creates a new Sprockets environment" do
       sprocket = machined.append_sprocket :updates
@@ -54,9 +52,9 @@ describe Machined::Environment do
   describe "#assets" do
     it "appends the standard asset paths" do
       within_construct do |c|
-        c.directory "app/assets/images"
-        c.directory "app/assets/javascripts"
-        c.directory "app/assets/stylesheets"
+        c.directory "assets/images"
+        c.directory "assets/javascripts"
+        c.directory "assets/stylesheets"
         c.directory "vendor/assets/images"
         c.directory "vendor/assets/javascripts"
         c.directory "vendor/assets/stylesheets"
@@ -65,35 +63,35 @@ describe Machined::Environment do
           "vendor/assets/images",
           "vendor/assets/javascripts",
           "vendor/assets/stylesheets",
-          "app/assets/images",
-          "app/assets/javascripts",
-          "app/assets/stylesheets"
+          "assets/images",
+          "assets/javascripts",
+          "assets/stylesheets"
         ].map { |path| c.join(path).to_s }
       end
     end
     
     it "appends the available asset paths" do
       within_construct do |c|
-        c.directory "app/assets/css"
-        c.directory "app/assets/img"
-        c.directory "app/assets/js"
-        c.directory "app/assets/plugins"
+        c.directory "assets/css"
+        c.directory "assets/img"
+        c.directory "assets/js"
+        c.directory "assets/plugins"
         
         machined.assets.paths.should == [
-          "app/assets/css",
-          "app/assets/img",
-          "app/assets/js",
-          "app/assets/plugins"
+          "assets/css",
+          "assets/img",
+          "assets/js",
+          "assets/plugins"
         ].map { |path| c.join(path).to_s }
       end
     end
     
     it "compiles web assets" do
       within_construct do |c|
-        c.file "app/assets/javascripts/main.js",       "//= require dep"
-        c.file "app/assets/javascripts/dep.js",        "var app = {};"
-        c.file "app/assets/stylesheets/main.css.scss", "@import 'dep';\nbody { color: $color; }"
-        c.file "app/assets/stylesheets/_dep.scss",     "$color: red;"
+        c.file "assets/javascripts/main.js",       "//= require dep"
+        c.file "assets/javascripts/dep.js",        "var app = {};"
+        c.file "assets/stylesheets/main.css.scss", "@import 'dep';\nbody { color: $color; }"
+        c.file "assets/stylesheets/_dep.scss",     "$color: red;"
         
         machined.assets["main.js"].to_s.should == "var app = {};\n"
         machined.assets["main.css"].to_s.should == "body {\n  color: red; }\n"
@@ -104,17 +102,17 @@ describe Machined::Environment do
   describe "#pages" do
     it "appends the pages path" do
       within_construct do |c|
-        c.directory "app/pages"
+        c.directory "pages"
         
         machined.pages.paths.should == [
-          "app/pages"
+          "pages"
         ].map { |path| c.join(path).to_s }
       end
     end
     
     it "compiles html pages" do
       within_construct do |c|
-        c.file "app/pages/index.html.haml", "%h1 Hello World"
+        c.file "pages/index.html.haml", "%h1 Hello World"
         
         machined.pages["index.html"].to_s.should == "<h1>Hello World</h1>\n"
       end
@@ -124,17 +122,17 @@ describe Machined::Environment do
   describe "#views" do
     it "appends the views path" do
       within_construct do |c|
-        c.directory "app/views"
+        c.directory "views"
         
         machined.views.paths.should == [
-          "app/views"
+          "views"
         ].map { |path| c.join(path).to_s }
       end
     end
     
     it "compiles html pages" do
       within_construct do |c|
-        c.file "app/views/layouts/main.html.haml", "%h1 Hello World"
+        c.file "views/layouts/main.html.haml", "%h1 Hello World"
         
         machined.views["layouts/main.html"].to_s.should == "<h1>Hello World</h1>\n"
       end
