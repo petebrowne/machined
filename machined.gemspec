@@ -8,8 +8,8 @@ Gem::Specification.new do |s|
   s.authors     = ["Pete Browne"]
   s.email       = ["me@petebrowne.com"]
   s.homepage    = ""
-  s.summary     = %q{TODO: Write a gem summary}
-  s.description = %q{TODO: Write a gem description}
+  s.summary     = %q{A static site generator and Rack server built using Sprockets 2.0}
+  s.description = %q{Why another static site generator? Machined is for the developers who know and love the asset pipeline of Rails 3.1 and want to develop blazingly fast static websites. It's built from the ground up using Sprockets 2.0.}
 
   s.rubyforge_project = "machined"
 
