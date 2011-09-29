@@ -3,7 +3,7 @@ require "active_support/core_ext/hash/reverse_merge"
 
 module Machined
   class Environment
-    # 
+    # Default options for a Machined environment.
     DEFAULT_OPTIONS = {
       :root        => ".",
       :asset_paths => %w(vendor/assets lib/assets app/assets),
@@ -30,7 +30,7 @@ module Machined
       @root      = Pathname.new(config[:root]).expand_path
       @sprockets = []
       
-      append_sprocket :assets do |assets|
+      append_sprocket :assets, :assets => true do |assets|
         config[:asset_paths].each do |asset_path|
           Utils.existent_directories(Utils.join(root, asset_path)).each do |path|
             assets.append_path path
@@ -41,11 +41,13 @@ module Machined
       append_sprocket :pages do |pages|
         pages_path = Utils.join(root, config[:pages_path])
         pages.append_path(pages_path) if pages_path.exist?
+        pages.register_mime_type "text/html", ".html"
       end
       
       append_sprocket :views do |views|
         views_path = Utils.join(root, config[:views_path])
         views.append_path(views_path) if views_path.exist?
+        pages.register_mime_type "text/html", ".html"
       end
     end
     

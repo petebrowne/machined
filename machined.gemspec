@@ -25,4 +25,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency "rspec",          "~> 2.6"
   s.add_development_dependency "rack-test",      "~> 0.6"
   s.add_development_dependency "test-construct", "~> 1.2"
+  s.add_development_dependency "haml",           "~> 3.1"
+  s.add_development_dependency "sass",           "~> 3.1"
+  s.add_development_dependency "rake"
 end

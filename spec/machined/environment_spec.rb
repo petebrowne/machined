@@ -87,6 +87,18 @@ describe Machined::Environment do
         ].map { |path| c.join(path).to_s }
       end
     end
+    
+    it "compiles web assets" do
+      within_construct do |c|
+        c.file "app/assets/javascripts/main.js",       "//= require dep"
+        c.file "app/assets/javascripts/dep.js",        "var app = {};"
+        c.file "app/assets/stylesheets/main.css.scss", "@import 'dep';\nbody { color: $color; }"
+        c.file "app/assets/stylesheets/_dep.scss",     "$color: red;"
+        
+        machined.assets["main.js"].to_s.should == "var app = {};\n"
+        machined.assets["main.css"].to_s.should == "body {\n  color: red; }\n"
+      end
+    end
   end
   
   describe "#pages" do
@@ -99,6 +111,14 @@ describe Machined::Environment do
         ].map { |path| c.join(path).to_s }
       end
     end
+    
+    it "compiles html pages" do
+      within_construct do |c|
+        c.file "app/pages/index.html.haml", "%h1 Hello World"
+        
+        machined.pages["index.html"].to_s.should == "<h1>Hello World</h1>\n"
+      end
+    end
   end
   
   describe "#views" do
@@ -109,6 +129,14 @@ describe Machined::Environment do
         machined.views.paths.should == [
           "app/views"
         ].map { |path| c.join(path).to_s }
+      end
+    end
+    
+    it "compiles html pages" do
+      within_construct do |c|
+        c.file "app/views/layouts/main.html.haml", "%h1 Hello World"
+        
+        machined.views["layouts/main.html"].to_s.should == "<h1>Hello World</h1>\n"
       end
     end
   end

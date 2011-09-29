@@ -2,10 +2,10 @@ require "sprockets"
 
 module Machined
   class Sprocket < Sprockets::Environment
-    
     # Default options for a Machined sprocket.
     DEFAULT_OPTIONS = {
-      :root => "."
+      :root   => ".",
+      :assets => false
     }.freeze
     
     # A reference to the Machined environment which
@@ -24,6 +24,19 @@ module Machined
       super config[:root]
       @machined = machined
       @context_class = Class.new Context
+      use_all_templates unless config[:assets]
+    end
+    
+    # Loops through the available Tilt templates
+    # and registers them as processor engines for
+    # Sprockets. By default, Sprockets cherry picks
+    # templates that work for web assets. We need to
+    # allow use of Haml, Markdown, etc.
+    def use_all_templates
+      Utils.available_templates.each do |ext, template|
+        next if engines(ext)
+        register_engine ext, template
+      end
     end
   end
 end
