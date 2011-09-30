@@ -44,6 +44,7 @@ module Machined
         pages.append_path(pages_path) if pages_path.exist?
         
         pages.register_mime_type     "text/html", ".html"
+        pages.register_preprocessor  "text/html", FrontMatterProcessor
         pages.register_postprocessor "text/html", LayoutProcessor
       end
       

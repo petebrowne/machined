@@ -59,14 +59,14 @@ describe Machined::Environment do
         c.directory "vendor/assets/javascripts"
         c.directory "vendor/assets/stylesheets"
         
-        machined.assets.paths.should == [
-          "vendor/assets/images",
-          "vendor/assets/javascripts",
-          "vendor/assets/stylesheets",
-          "assets/images",
-          "assets/javascripts",
-          "assets/stylesheets"
-        ].map { |path| c.join(path).to_s }
+        machined.assets.paths.should match_paths(%w(
+          vendor/assets/images
+          vendor/assets/javascripts
+          vendor/assets/stylesheets
+          assets/images
+          assets/javascripts
+          assets/stylesheets
+        )).with_root(c)
       end
     end
     
@@ -77,12 +77,12 @@ describe Machined::Environment do
         c.directory "assets/js"
         c.directory "assets/plugins"
         
-        machined.assets.paths.should == [
-          "assets/css",
-          "assets/img",
-          "assets/js",
-          "assets/plugins"
-        ].map { |path| c.join(path).to_s }
+        machined.assets.paths.should match_paths(%w(
+          assets/css
+          assets/img
+          assets/js
+          assets/plugins
+        )).with_root(c)
       end
     end
     
@@ -103,17 +103,13 @@ describe Machined::Environment do
     it "appends the pages path" do
       within_construct do |c|
         c.directory "pages"
-        
-        machined.pages.paths.should == [
-          "pages"
-        ].map { |path| c.join(path).to_s }
+        machined.pages.paths.should match_paths(%w(pages)).with_root(c)
       end
     end
     
     it "compiles html pages" do
       within_construct do |c|
         c.file "pages/index.html.haml", "%h1 Hello World"
-        
         machined.pages["index.html"].to_s.should == "<h1>Hello World</h1>\n"
       end
     end
@@ -123,17 +119,13 @@ describe Machined::Environment do
     it "appends the views path" do
       within_construct do |c|
         c.directory "views"
-        
-        machined.views.paths.should == [
-          "views"
-        ].map { |path| c.join(path).to_s }
+        machined.views.paths.should match_paths(%w(views)).with_root(c)
       end
     end
     
     it "compiles html pages" do
       within_construct do |c|
         c.file "views/layouts/main.html.haml", "%h1 Hello World"
-        
         machined.views["layouts/main.html"].to_s.should == "<h1>Hello World</h1>\n"
       end
     end

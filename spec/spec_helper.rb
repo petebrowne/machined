@@ -1,7 +1,8 @@
-require "machined"
-require "sprockets"
 require "construct"
 require "rack/test"
+require "unindent"
+require "machined"
+require "sprockets"
 
 # Requires supporting files with custom matchers and macros, etc,
 # in ./support/ and its subdirectories.

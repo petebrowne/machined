@@ -11,8 +11,8 @@ describe Machined::Context do
   
   describe "#config" do
     it "returns a reference to the Machined environment's configuration" do
-      machined :layout => "application"
       with_context do |context, output|
+        machined.config[:layout] = "application"
         context.config[:layout].should == "application"
       end
     end
