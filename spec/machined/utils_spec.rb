@@ -4,18 +4,11 @@ describe Machined::Utils do
   describe ".avialable_templates" do
     it "returns the available Tilt templates" do
       Machined::Utils.instance_variable_set "@available_templates", nil
-      Machined::Utils.available_templates.should == {
-        ".str"      => Tilt::StringTemplate,
-        ".erb"      => Tilt::ERBTemplate,
-        ".rhtml"    => Tilt::ERBTemplate,
-        ".haml"     => Tilt::HamlTemplate,
-        ".sass"     => Tilt::SassTemplate,
-        ".scss"     => Tilt::ScssTemplate,
-        ".markdown" => Tilt::RDiscountTemplate,
-        ".mkd"      => Tilt::RDiscountTemplate,
-        ".md"       => Tilt::RDiscountTemplate,
-        ".rdoc"     => Tilt::RDocTemplate
-      }
+      available_templates = Machined::Utils.available_templates
+      available_templates[".markdown"].should be(Tilt::RDiscountTemplate)
+      available_templates[".md"].should be(Tilt::RDiscountTemplate)
+      available_templates[".haml"].should be(Tilt::HamlTemplate)
+      available_templates[".erb"].should be(Tilt::ERBTemplate)
     end
   end
   
