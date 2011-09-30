@@ -22,4 +22,15 @@ describe Machined::Sprocket do
       sprocket.context_class.should < Machined::Context
     end
   end
+  
+  describe "#use_all_templates" do
+    it "registers available templates as engines" do
+      sprocket = create_sprocket :assets => true
+      sprocket.engines(".haml").should be_nil
+      sprocket.engines(".md").should be_nil
+      sprocket.use_all_templates
+      sprocket.engines(".haml").should be(Tilt::HamlTemplate)
+      sprocket.engines(".md").should be(Tilt::RDiscountTemplate)
+    end
+  end
 end
