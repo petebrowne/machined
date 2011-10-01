@@ -15,9 +15,11 @@ module Machined
       (.*)\Z        # Rest of File
     /mx
     
+    # See `Tilt::Template#prepare`.
     def prepare
     end
     
+    # See `Tilt::Template#evaluate`.
     def evaluate(context, locals = {}, &block)
       output = data
       if FRONT_MATTER_PARSER.match data

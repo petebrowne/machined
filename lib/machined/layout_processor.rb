@@ -8,9 +8,11 @@ module Machined
     # Path to the layout file
     attr_reader :layout_path
     
+    # See `Tilt::Template#prepare`.
     def prepare
     end
     
+    # See `Tilt::Template#evaluate`.
     def evaluate(context, locals, &block)
       @context = context
       if layout? && @layout_path = resolve_layout
@@ -23,14 +25,20 @@ module Machined
     
     protected
     
+    # A reference to the Views sprocket, where the
+    # layout asset will be.
     def views
       context.machined.views
     end
     
+    # Determine if we should attempt to wrap the
+    # content with a layout.
     def layout?
       context.layout != false
     end
     
+    # Attempt to find the layout file in the Views
+    # sprocket.
     def resolve_layout
       views.resolve "layouts/#{context.layout}", :content_type => context.content_type
     rescue Sprockets::FileNotFound, Sprockets::ContentTypeMismatch
