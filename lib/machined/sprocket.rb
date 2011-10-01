@@ -4,8 +4,9 @@ module Machined
   class Sprocket < Sprockets::Environment
     # Default options for a Machined sprocket.
     DEFAULT_OPTIONS = {
-      :root   => ".",
-      :assets => false
+      :root    => ".",
+      :assets  => false,
+      :compile => true
     }.freeze
     
     # A reference to the Machined environment which

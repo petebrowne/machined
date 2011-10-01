@@ -7,7 +7,9 @@ module Machined
     DEFAULT_OPTIONS = {
       :root        => ".",
       :asset_paths => %w(vendor/assets lib/assets assets),
+      :assets_url  => "/assets",
       :pages_path  => "pages",
+      :pages_url   => "/",
       :views_path  => "views",
       :layout      => "main"
     }.freeze
@@ -24,6 +26,11 @@ module Machined
     # instances) that are the core of a Machined environment.
     attr_reader :sprockets
     
+    # When the Machined environment is used as a Rack server, this
+    # will reference the actual `Machined::Server` instance that handles
+    # the requests.
+    attr_reader :server
+    
     # Creates a new Machined environment. Sets up a default assets sprocket
     # similar to what you would use in a Rails 3.1 app.
     def initialize(options = {})
@@ -31,7 +38,7 @@ module Machined
       @root      = Pathname.new(config[:root]).expand_path
       @sprockets = []
       
-      append_sprocket :assets, :assets => true do |assets|
+      append_sprocket :assets, :assets => true, :url => config[:assets_url] do |assets|
         config[:asset_paths].each do |asset_path|
           Utils.existent_directories(Utils.join(root, asset_path)).each do |path|
             assets.append_path path
@@ -39,7 +46,7 @@ module Machined
         end
       end
       
-      append_sprocket :pages do |pages|
+      append_sprocket :pages, :url => config[:pages_url] do |pages|
         pages_path = Utils.join(root, config[:pages_path])
         pages.append_path(pages_path) if pages_path.exist?
         
@@ -48,12 +55,19 @@ module Machined
         pages.register_postprocessor "text/html", LayoutProcessor
       end
       
-      append_sprocket :views do |views|
+      append_sprocket :views, :compile => false do |views|
         views_path = Utils.join(root, config[:views_path])
         views.append_path(views_path) if views_path.exist?
         
         views.register_mime_type "text/html", ".html"
       end
+    end
+    
+    # Handles Rack requests by passing the +env+ to an instance
+    # of `Machined::Server`.
+    def call(env)
+      @server ||= Server.new self
+      server.call(env)
     end
     
     # Creates a Machined sprocket with the given +name+ and +options+
