@@ -46,4 +46,22 @@ describe Machined::Server do
       last_response.should be_not_found
     end
   end
+  
+  it "serves up custom sprockets" do
+    within_construct do |c|
+      dir = c.directory "updates"
+      dir.file "new-site.html", "<h1>Hello World</h1>\n"
+      
+      get "/"
+      
+      machined.append_sprocket :updates, :url => "/updates" do |updates|
+        updates.append_path dir
+        updates.register_mime_type "text/html", ".html"
+      end
+      
+      get "/updates/new-site"
+      last_response.body.should == "<h1>Hello World</h1>\n"
+      last_response.content_type.should == "text/html"
+    end
+  end
 end

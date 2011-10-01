@@ -21,11 +21,12 @@ module Machined
       @url_map.call(env)
     end
     
-    #
+    # Remaps the Machined environment's current
+    # sprockets using `Rack::URLMap`.
     def remap
       map = {}
       machined.sprockets.each do |sprocket|
-        next if sprocket.config[:compile] == false || 
+        next unless sprocket.config[:compile] && sprocket.config[:url]
         map[sprocket.config[:url]] = sprocket
       end
       @url_map = Rack::URLMap.new map

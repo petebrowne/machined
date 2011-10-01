@@ -85,6 +85,7 @@ module Machined
     def append_sprocket(name, options = {}, &block)
       create_sprocket(name, options, &block).tap do |sprocket|
         sprockets.push(sprocket).uniq!
+        server and server.remap
       end
     end
     
@@ -93,6 +94,7 @@ module Machined
     def prepend_sprocket(name, options = {}, &block)
       create_sprocket(name, options, &block).tap do |sprocket|
         sprockets.unshift(sprocket).uniq!
+        server and server.remap
       end
     end
     
