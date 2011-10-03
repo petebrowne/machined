@@ -25,7 +25,7 @@ describe Machined::Precompiler do
             = yield
       CONTENT
     
-      puts machined.precompile.inspect
+      machined.precompile
       
       c.join("public/assets/main.js").read.should == "var app = {};\n"
       c.join("public/assets/main.css").read.should == "body {\n  color: red; }\n"
