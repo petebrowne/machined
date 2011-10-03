@@ -28,6 +28,15 @@ module Machined
       use_all_templates unless config[:assets]
     end
     
+    # Returns true, if this sprocket should be
+    # compiled. Nine times out of ten, you will want
+    # your sprocket compiled, but sometimes - like
+    # the default views sprocket - it is used as
+    # a uncompiled resource.
+    def compile?
+      config[:compile] != false && !config[:url].nil?
+    end
+    
     # Loops through the available Tilt templates
     # and registers them as processor engines for
     # Sprockets. By default, Sprockets cherry picks

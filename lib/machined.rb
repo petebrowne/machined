@@ -6,6 +6,7 @@ module Machined
   autoload :FrontMatterProcessor, "machined/front_matter_processor"
   autoload :LayoutProcessor,      "machined/layout_processor"
   autoload :LocalsHelpers,        "machined/locals_helpers"
+  autoload :Precompiler,          "machined/precompiler"
   autoload :Server,               "machined/server"
   autoload :Sprocket,             "machined/sprocket"
   autoload :Utils,                "machined/utils"

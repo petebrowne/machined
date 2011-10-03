@@ -8,7 +8,6 @@ describe Machined::Utils do
       available_templates[".markdown"].should be(Tilt::RDiscountTemplate)
       available_templates[".md"].should be(Tilt::RDiscountTemplate)
       available_templates[".haml"].should be(Tilt::HamlTemplate)
-      available_templates[".erb"].should be(Tilt::ERBTemplate)
     end
   end
   
@@ -26,23 +25,6 @@ describe Machined::Utils do
     it "returns an empty array when the path is not a directory" do
       within_construct do |c|
         Machined::Utils.existent_directories(c.join("blank")).should == []
-      end
-    end
-  end
-  
-  describe ".join" do
-    it "joins the root with the path" do
-      within_construct do |c|
-        assets = c.directory "assets"
-        Machined::Utils.join(c, "assets").should == assets
-      end
-    end
-    
-    it "returns the path if it is absolute" do
-      within_construct do |c|
-        root   = c.directory "app"
-        assets = c.directory "assets"
-        Machined::Utils.join(root, assets).should == assets
       end
     end
   end

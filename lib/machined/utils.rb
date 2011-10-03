@@ -27,13 +27,5 @@ module Machined
       pathname.directory? or return []
       pathname.children.select &:directory?
     end
-    
-    # Joins the +root+ path with +path+. If +path+
-    # is absolute, it is returned without joining.
-    def self.join(root, path)
-      pathname = Pathname.new path
-      pathname.absolute? and return pathname
-      Pathname.new(root).join pathname
-    end
   end
 end
