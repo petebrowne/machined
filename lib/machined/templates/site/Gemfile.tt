@@ -1,0 +1,6 @@
+source :rubygems
+
+gem "machined", "<%= Machined::VERSION %>"
+
+gem "sass", "~> 3.1"
+gem "coffee-script", "~> 2.2"
