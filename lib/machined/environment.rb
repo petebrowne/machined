@@ -20,10 +20,10 @@ module Machined
     # environment.
     attr_reader :config
     
-    # When the Machined environment is precompiling static files,
-    # this will reference the `Machined::Precompiler` which handles
+    # When the Machined environment is compiling static files,
+    # this will reference the `Machined::StaticCompiler` which handles
     # looping through the available files and generating them.
-    attr_reader :precompiler
+    attr_reader :static_compiler
     
     # A reference to the root directory the Machined
     # environment is run from.
@@ -86,9 +86,9 @@ module Machined
     
     # Loops through the available static files and generates them in
     # the output path.
-    def precompile
-      @precompiler ||= Precompiler.new self, root.join(config.output_path)
-      precompiler.precompile
+    def compile
+      @static_compiler ||= StaticCompiler.new self, root.join(config.output_path)
+      static_compiler.compile
     end
     
     # Creates a Machined sprocket with the given +name+ and +options+

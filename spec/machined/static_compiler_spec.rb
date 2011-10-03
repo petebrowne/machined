@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe Machined::Precompiler do
+describe Machined::StaticCompiler do
   it "generates all of the static files" do
     within_construct do |c|
       c.file "assets/javascripts/main.js",       "//= require _dep"
@@ -25,7 +25,7 @@ describe Machined::Precompiler do
             = yield
       CONTENT
     
-      machined.precompile
+      machined.compile
       
       c.join("public/assets/main.js").read.should == "var app = {};\n"
       c.join("public/assets/main.css").read.should == "body {\n  color: red; }\n"
