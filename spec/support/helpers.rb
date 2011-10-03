@@ -31,8 +31,10 @@ module Machined
     end
     
     # Runs the CLI with the given args.
-    def machined_cli(args)
-      Machined::CLI.start args.split(" ")
+    def machined_cli(args, silence = true)
+      capture(:stdout) {
+        Machined::CLI.start args.split(" ")
+      }
     end
     
     # Captures the given stream and returns it:

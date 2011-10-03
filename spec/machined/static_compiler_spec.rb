@@ -27,10 +27,10 @@ describe Machined::StaticCompiler do
     
       machined.compile
       
-      c.join("public/assets/main.js").read.should == "var app = {};\n"
-      c.join("public/assets/main.css").read.should == "body {\n  color: red; }\n"
-      c.join("public/assets/logo.jpg").exist?.should be_true
-      c.join("public/index.html").read.should == <<-CONTENT.unindent
+      File.read("public/assets/main.js").should == "var app = {};\n"
+      File.read("public/assets/main.css").should == "body {\n  color: red; }\n"
+      File.exist?("public/assets/logo.jpg").should be_true
+      File.read("public/index.html").should == <<-CONTENT.unindent
         <!DOCTYPE html>
         <html>
           <head>
