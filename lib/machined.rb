@@ -1,6 +1,7 @@
 require "machined/version"
 
 module Machined
+  autoload :CLI,                  "machined/cli"
   autoload :Context,              "machined/context"
   autoload :Environment,          "machined/environment"
   autoload :FrontMatterProcessor, "machined/front_matter_processor"

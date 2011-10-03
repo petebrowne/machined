@@ -29,5 +29,28 @@ module Machined
         yield asset.send(:blank_context), asset.to_s
       end
     end
+    
+    # Runs the CLI with the given args.
+    def machined_cli(args)
+      Machined::CLI.start args.split(" ")
+    end
+    
+    # Captures the given stream and returns it:
+    #
+    #   stream = capture(:stdout) { puts "Cool" }
+    #   stream # => "Cool\n"
+    #
+    def capture(stream)
+      begin
+        stream = stream.to_s
+        eval "$#{stream} = StringIO.new"
+        yield
+        result = eval("$#{stream}").string
+      ensure
+        eval "$#{stream} = #{stream.upcase}"
+      end
+  
+      result
+    end
   end
 end
