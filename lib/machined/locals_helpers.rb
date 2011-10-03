@@ -36,7 +36,7 @@ module Machined
       if has_local?(:layout)
         locals[:layout]
       else
-        machined.config[:layout]
+        machined.config.layout
       end
     end
     

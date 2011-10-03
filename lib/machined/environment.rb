@@ -1,3 +1,4 @@
+require "ostruct"
 require "pathname"
 require "active_support/core_ext/hash/reverse_merge"
 
@@ -31,23 +32,29 @@ module Machined
     # the requests.
     attr_reader :server
     
-    # Creates a new Machined environment. Sets up a default assets sprocket
-    # similar to what you would use in a Rails 3.1 app.
+    # Creates a new Machined environment. It sets up three default
+    # sprockets.
+    #
+    #   * An assets sprocket similar to what you would use
+    # in a Rails 3.1 app.
+    #   * A pages sprocket which handles static HTML pages.
+    #   * A views sprocket, which is not compiled, which is where
+    # layouts and partials go.
     def initialize(options = {})
-      @config    = DEFAULT_OPTIONS.dup.merge options
-      @root      = Pathname.new(config[:root]).expand_path
+      @config    = OpenStruct.new DEFAULT_OPTIONS.dup.merge(options)
+      @root      = Pathname.new(config.root).expand_path
       @sprockets = []
       
-      append_sprocket :assets, :assets => true, :url => config[:assets_url] do |assets|
-        config[:asset_paths].each do |asset_path|
+      append_sprocket :assets, :assets => true, :url => config.assets_url do |assets|
+        config.asset_paths.each do |asset_path|
           Utils.existent_directories(Utils.join(root, asset_path)).each do |path|
             assets.append_path path
           end
         end
       end
       
-      append_sprocket :pages, :url => config[:pages_url] do |pages|
-        pages_path = Utils.join(root, config[:pages_path])
+      append_sprocket :pages, :url => config.pages_url do |pages|
+        pages_path = Utils.join(root, config.pages_path)
         pages.append_path(pages_path) if pages_path.exist?
         
         pages.register_mime_type     "text/html", ".html"
@@ -56,7 +63,7 @@ module Machined
       end
       
       append_sprocket :views, :compile => false do |views|
-        views_path = Utils.join(root, config[:views_path])
+        views_path = Utils.join(root, config.views_path)
         views.append_path(views_path) if views_path.exist?
         
         views.register_mime_type "text/html", ".html"
