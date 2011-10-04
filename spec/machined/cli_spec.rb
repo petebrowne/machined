@@ -4,8 +4,8 @@ describe Machined::CLI do
   describe "#compile" do
     it "compiles the site" do
       machined.should_receive(:compile)
-      Machined::Environment.should_receive(:new).and_return(machined)
-      machined_cli "compile"
+      Machined::Environment.should_receive(:new).with(:root => ".", :output_path => "public", :environment => "production").and_return(machined)
+      machined_cli "compile -e production"
     end
   end
   
@@ -117,7 +117,12 @@ describe Machined::CLI do
   end
   
   describe "#server" do
-    
+    it "should start a Rack server" do
+      app = machined
+      Machined::Environment.should_receive(:new).with(:root => ".", :output_path => "site", :environment => "production").and_return(app)
+      Rack::Server.should_receive(:start).with(hash_including(:app => app, :environment => "production", :Port => 5000))
+      machined_cli "server -o site -e production -p 5000"
+    end
   end
   
   describe "#version" do
