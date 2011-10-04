@@ -64,4 +64,14 @@ describe Machined::Server do
       last_response.content_type.should == "text/html"
     end
   end
+  
+  it "serves up files in the output path" do
+    within_construct do |c|
+      c.file "public/index.html", "<h1>Hello World</h1>\n"
+      
+      get "/index.html"
+      last_response.body.should == "<h1>Hello World</h1>\n"
+      last_response.content_type.should == "text/html"
+    end
+  end
 end

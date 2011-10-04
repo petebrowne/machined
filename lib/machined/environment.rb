@@ -103,7 +103,7 @@ module Machined
     # Handles Rack requests by passing the +env+ to an instance
     # of `Machined::Server`.
     def call(env)
-      @server ||= Server.new self
+      @server ||= Server.new self, root.join(config.output_path)
       server.call(env)
     end
     

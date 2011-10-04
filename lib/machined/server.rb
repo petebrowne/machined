@@ -1,16 +1,16 @@
-require "rack/urlmap"
+require "rack"
 
 module Machined
   class Server
-    
     # A reference to the Machined environment which
     # created this instance.
     attr_reader :machined
     
     # Creates a new Rack server that will serve
     # up the processed files.
-    def initialize(machined)
+    def initialize(machined, output_path)
       @machined = machined
+      @files    = Rack::File.new(output_path)
       remap
     end
     
@@ -18,7 +18,9 @@ module Machined
     # should handle the request and then...let it
     # handle it.
     def call(env)
-      @url_map.call(env)
+      response = @url_map.call(env)
+      response = @files.call(env) if response.first == 404
+      response
     end
     
     # Remaps the Machined environment's current
