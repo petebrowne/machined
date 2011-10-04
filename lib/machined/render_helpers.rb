@@ -121,7 +121,7 @@ module Machined
         machined.views.resolve(partial) { |found| return found }
       end
       
-      nil
+      raise Sprockets::FileNotFound, "couldn't find file '#{path}'"
     end
     
     # Evaluates the given path without using the given processor.

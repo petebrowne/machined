@@ -70,5 +70,15 @@ describe Machined::Context do
         machined.pages["index.html"].to_s.should == "1\n1\n2\n2\n3\n3\n"
       end
     end
+    
+    it "raises a Sprockets::FileNotFound error if the partial is missing" do
+      within_construct do |c|
+        c.file "pages/index.html.erb", %(<%= render "partial" %>)
+        
+        expect {
+          machined.pages["index.html"].to_s
+        }.to raise_error(Sprockets::FileNotFound)
+      end
+    end
   end
 end
