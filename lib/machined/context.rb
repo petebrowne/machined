@@ -3,6 +3,7 @@ require "sprockets"
 module Machined
   class Context < Sprockets::Context
     include LocalsHelpers
+    include RenderHelpers
     
     # Override initialize to add helpers
     # from the Machined environment.
