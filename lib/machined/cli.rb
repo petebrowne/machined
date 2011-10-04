@@ -13,6 +13,9 @@ module Machined
     class_option "root", :aliases => "-r",
       :desc => "Path to the root directory of the project",
       :default => "."
+    class_option "config_path", :aliases => "-c",
+      :desc => "Path to the config file",
+      :default => "machined.rb"
     class_option "output_path", :aliases => "-o",
       :desc => "Path to the output directory of the project",
       :default => "public"
@@ -73,7 +76,7 @@ module Machined
     # Returns the options needed for setting up
     # Machined environment.
     def machined_options # :nodoc:
-      symbolized_options(:root, :output_path).tap do |machined_options|
+      symbolized_options(:root, :config_path, :output_path).tap do |machined_options|
         machined_options[:environment] = environment
       end
     end

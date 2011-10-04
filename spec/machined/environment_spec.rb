@@ -1,6 +1,19 @@
 require "spec_helper"
 
 describe Machined::Environment do
+  describe "#initialize" do
+    it "loads configuration from a config file" do
+      within_construct do |c|
+        c.file "machined.rb", <<-CONTENT.unindent
+          config.output_path = "site"
+          append_sprocket :updates
+        CONTENT
+        machined.config.output_path.should == "site"
+        machined.updates.should be_a(Machined::Sprocket)
+      end
+    end
+  end
+  
   describe "#append_sprocket" do
     it "creates a new Sprockets environment" do
       sprocket = machined.append_sprocket :updates
@@ -46,6 +59,31 @@ describe Machined::Environment do
     it "prepends the sprocket to #sprockets" do
       sprocket = machined.prepend_sprocket :updates
       machined.sprockets.first.should be(sprocket)
+    end
+  end
+  
+  describe "#helpers" do
+    it "adds methods defined in the given block to the Context" do
+      machined.helpers do
+        def hello
+          "world"
+        end
+      end
+      with_context do |context, output|
+        context.hello.should == "world"
+      end
+    end
+    
+    it "adds methods defined in the given module to the Context" do
+      helper = Module.new do
+        def hello
+          "world"
+        end
+      end
+      machined.helpers helper
+      with_context do |context, output|
+        context.hello.should == "world"
+      end
     end
   end
   

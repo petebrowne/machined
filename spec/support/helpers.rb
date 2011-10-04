@@ -18,11 +18,12 @@ module Machined
     def with_context(content = "")
       within_construct do |c|
         # Create the necessary files
-        c.file "context/machined.css.erb", content
+        path = c.directory "context"
+        path.file "machined.css.erb", content
         
         # Create a sprocket that points to the correct dir
         sprocket = create_sprocket
-        sprocket.append_path "context"
+        sprocket.append_path path
         
         # Find the asset and yield the context and output
         asset = sprocket["machined.css"]
