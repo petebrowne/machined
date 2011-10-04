@@ -87,7 +87,7 @@ describe Machined::Environment do
     end
   end
   
-  describe "#assets" do
+  describe "default assets sprocket" do
     it "appends the standard asset paths" do
       within_construct do |c|
         c.directory "assets/images"
@@ -137,7 +137,7 @@ describe Machined::Environment do
     end
   end
   
-  describe "#pages" do
+  describe "default pages sprocket" do
     it "appends the pages path" do
       within_construct do |c|
         c.directory "pages"
@@ -153,7 +153,7 @@ describe Machined::Environment do
     end
   end
   
-  describe "#views" do
+  describe "default views sprocket" do
     it "appends the views path" do
       within_construct do |c|
         c.directory "views"
@@ -165,6 +165,26 @@ describe Machined::Environment do
       within_construct do |c|
         c.file "views/layouts/main.html.haml", "%h1 Hello World"
         machined.views["layouts/main.html"].to_s.should == "<h1>Hello World</h1>\n"
+      end
+    end
+  end
+  
+  describe "compression" do
+    context "with compress set to true" do
+      it "compresses javascripts and stylesheets" do
+        within_construct do |c|
+          c.file "assets/javascripts/main.js",       "//= require dep"
+          c.file "assets/javascripts/dep.js",        "var app = {};"
+          c.file "assets/stylesheets/main.css.scss", "@import 'dep';\nbody { color: $color; }"
+          c.file "assets/stylesheets/_dep.scss",     "$color: red;"
+          
+          Crush::Uglifier.should_receive(:compress).with("var app = {};\n").and_return("compressed")
+          Crush::Sass::Engine.should_receive(:compress).with("body {\n  color: red; }\n").and_return("compressed")
+          
+          machined :compress => true
+          machined.assets["main.js"].to_s.should == "compressed"
+          machined.assets["main.css"].to_s.should == "compressed"
+        end
       end
     end
   end

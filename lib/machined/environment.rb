@@ -58,6 +58,11 @@ module Machined
       @sprockets       = []
       @context_helpers = []
       
+      if config.compress
+        config.compress_js  = true
+        config.compress_css = true
+      end
+      
       # Create and append the default `assets` sprocket.
       # This sprocket mimics the asset pipeline in Rails 3.1.
       append_sprocket :assets, :assets => true, :url => config.assets_url do |assets|
@@ -65,6 +70,16 @@ module Machined
           Utils.existent_directories(root.join(asset_path)).each do |path|
             assets.append_path path
           end
+        end
+        
+        if config.compress_js
+          Crush.register_js
+          assets.js_compressor = Tilt["js"]
+        end
+        
+        if config.compress_css
+          Crush.register_css
+          assets.css_compressor = Tilt["css"]
         end
       end
       
