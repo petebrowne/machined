@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe Machined::LayoutProcessor do
+describe Machined::Processors::LayoutProcessor do
   it "wraps the content with a layout" do
     within_construct do |c|
       c.file "pages/index.html", "<h1>Hello World</h1>"

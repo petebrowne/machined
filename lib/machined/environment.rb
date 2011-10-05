@@ -17,6 +17,7 @@ module Machined
       :pages_path   => "pages",
       :pages_url    => "/",
       :views_path   => "views",
+      :environment  => "development",
       :layout       => "main"
     }.freeze
     
@@ -92,8 +93,8 @@ module Machined
       # reading YAML front matter.
       append_sprocket :pages do |pages|
         pages.register_mime_type     "text/html", ".html"
-        pages.register_preprocessor  "text/html", FrontMatterProcessor
-        pages.register_postprocessor "text/html", LayoutProcessor
+        pages.register_preprocessor  "text/html", Processors::FrontMatterProcessor
+        pages.register_postprocessor "text/html", Processors::LayoutProcessor
       end
       
       # Create and append the default `views` sprocket.

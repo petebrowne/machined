@@ -4,9 +4,9 @@ require "sprockets"
 
 module Machined
   class Context < Sprockets::Context
-    include LocalsHelpers
-    include OutputHelpers
-    include RenderHelpers
+    include Helpers::LocalsHelpers
+    include Helpers::OutputHelpers
+    include Helpers::RenderHelpers
     include Padrino::Helpers::OutputHelpers
     include Padrino::Helpers::TagHelpers
     include Padrino::Helpers::AssetTagHelpers

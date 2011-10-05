@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe Machined::FrontMatterProcessor do
+describe Machined::Processors::FrontMatterProcessor do
   it "parses the front matter and adds locals" do
     within_construct do |c|
       c.file "pages/index.html.haml", <<-CONTENT.unindent

@@ -56,7 +56,7 @@ describe Machined::CLI do
           <html>
             <head lang="en">
               <meta charset="utf-8">
-              <title><%= page.title %></title>
+              <title><%= title %></title>
               <%= stylesheet_link_tag "main" %>
               <%= javascript_include_tag "main" %>
             </head>
@@ -100,7 +100,14 @@ describe Machined::CLI do
       within_construct do |c|
         machined_cli "new my_site"
         File.read("my_site/machined.rb").should == <<-CONTENT.unindent
-          # TODO...
+          if config.environment == "production"
+            # Compress javascripts and stylesheets
+            config.compress = true
+          end
+          
+          helpers do
+            # Define helper methods here
+          end
         CONTENT
       end
     end
