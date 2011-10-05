@@ -98,12 +98,12 @@ describe Machined::Environment do
         c.directory "vendor/assets/stylesheets"
         
         machined.assets.paths.should match_paths(%w(
-          vendor/assets/images
-          vendor/assets/javascripts
-          vendor/assets/stylesheets
           assets/images
           assets/javascripts
           assets/stylesheets
+          vendor/assets/images
+          vendor/assets/javascripts
+          vendor/assets/stylesheets
         )).with_root(c)
       end
     end
@@ -185,6 +185,17 @@ describe Machined::Environment do
           machined.assets["main.js"].to_s.should == "compressed"
           machined.assets["main.css"].to_s.should == "compressed"
         end
+      end
+    end
+  end
+  
+  context "with a js_compressor set" do
+    it "compresses using that compressor" do
+      within_construct do |c|
+        c.file "assets/javascripts/main.js", "var app = {};"
+        c.file "machined.rb", "config.js_compressor = :packr"
+        Crush::Packr.should_receive(:compress).with("var app = {};\n").and_return("compressed")
+        machined.assets["main.js"].to_s.should == "compressed"
       end
     end
   end

@@ -1,21 +1,45 @@
 require "ostruct"
 require "pathname"
 require "active_support/core_ext/hash/reverse_merge"
+require "crush"
+require "tilt"
 
 module Machined
   class Environment
     # Default options for a Machined environment.
     DEFAULT_OPTIONS = {
-      :root        => ".",
-      :config_path => "machined.rb",
-      :output_path => "public",
-      :asset_paths => %w(vendor/assets lib/assets assets),
-      :assets_url  => "/assets",
-      :pages_path  => "pages",
-      :pages_url   => "/",
-      :views_path  => "views",
-      :layout      => "main"
+      :root         => ".",
+      :config_path  => "machined.rb",
+      :output_path  => "public",
+      :assets_path  => "assets",
+      :assets_paths => %w(lib/assets vendor/assets),
+      :assets_url   => "/assets",
+      :pages_path   => "pages",
+      :pages_url    => "/",
+      :views_path   => "views",
+      :layout       => "main"
     }.freeze
+    
+    # A hash of Javascript compressors. When `config.js_compressor`
+    # is set using a symbol, such as `:uglifier`, this is where
+    # we check which engine to use.
+    JS_COMPRESSORS = {
+      :jsmin    => Crush::JSMin,
+      :packr    => Crush::Packr,
+      :yui      => Crush::YUI::JavaScriptCompressor,
+      :closure  => Crush::Closure::Compiler,
+      :uglifier => Crush::Uglifier
+    }
+    
+    # A hash of CSS compressors. When `config.css_compressor`
+    # is set using a symbol, such as `:sass`, this is where
+    # we check which engine to use.
+    CSS_COMPRESSORS = {
+      :cssmin    => Crush::CSSMin,
+      :rainpress => Crush::Rainpress,
+      :yui       => Crush::YUI::CssCompressor,
+      :sass      => Crush::Sass::Engine
+    }
     
     # The global configuration for the Machined
     # environment.
@@ -58,39 +82,15 @@ module Machined
       @sprockets       = []
       @context_helpers = []
       
-      if config.compress
-        config.compress_js  = true
-        config.compress_css = true
-      end
-      
       # Create and append the default `assets` sprocket.
       # This sprocket mimics the asset pipeline in Rails 3.1.
-      append_sprocket :assets, :assets => true, :url => config.assets_url do |assets|
-        config.asset_paths.each do |asset_path|
-          Utils.existent_directories(root.join(asset_path)).each do |path|
-            assets.append_path path
-          end
-        end
-        
-        if config.compress_js
-          Crush.register_js
-          assets.js_compressor = Tilt["js"]
-        end
-        
-        if config.compress_css
-          Crush.register_css
-          assets.css_compressor = Tilt["css"]
-        end
-      end
+      append_sprocket :assets, :assets => true
       
       # Create and append the default `pages` sprocket.
       # This sprocket is responsible for processing HTML pages,
       # and includes processors for wrapping pages in layouts and
       # reading YAML front matter.
-      append_sprocket :pages, :url => config.pages_url do |pages|
-        pages_path = root.join(config.pages_path)
-        pages.append_path(pages_path) if pages_path.exist?
-        
+      append_sprocket :pages do |pages|
         pages.register_mime_type     "text/html", ".html"
         pages.register_preprocessor  "text/html", FrontMatterProcessor
         pages.register_postprocessor "text/html", LayoutProcessor
@@ -101,18 +101,42 @@ module Machined
       # meant to be resources for the other sprockets. For instance,
       # the layouts for the `pages` sprocket will be located here.
       append_sprocket :views, :compile => false do |views|
-        views_path = root.join(config.views_path)
-        views.append_path(views_path) if views_path.exist?
-        
         views.register_mime_type "text/html", ".html"
       end
       
       # If there's a config file, execute with the scope of the
-      # newly created Machined environment.
+      # newly created Machined environment. The default sprockets are
+      # available at this point, but not fully configured. This is so
+      # you can actually configure the sprockets with this file.
       config_file = root.join(config.config_path)
       instance_eval config_file.read if config_file.exist?
       
-      yield self if block_given?
+      # Append the paths for each sprocket. The default `assets` sprocket
+      # is special, because we actually append the directories within
+      # the given paths (like the Rails 3.1 asset pipeline).
+      append_path  pages, config.pages_path
+      append_paths pages, config.pages_paths
+      append_path  views, config.views_path
+      append_paths views, config.views_paths
+      append_paths assets, Utils.existent_directories(root.join(config.assets_path))
+      config.assets_paths.each do |asset_path|
+        append_paths assets, Utils.existent_directories(root.join(asset_path))
+      end
+      
+      # Set the URLs for the compilable default sprockets.
+      assets.config[:url] = config.assets_url
+      pages.config[:url]  = config.pages_url
+      
+      # Now setup assets compression.
+      if config.compress
+        config.compress_js  = true
+        config.compress_css = true
+      else
+        config.compress_js  = true if config.js_compressor
+        config.compress_css = true if config.css_compressor
+      end
+      assets.js_compressor  = js_compressor  if config.compress_js
+      assets.css_compressor = css_compressor if config.compress_css
     end
     
     # Handles Rack requests by passing the +env+ to an instance
@@ -200,6 +224,53 @@ module Machined
       Sprocket.new(self, options).tap do |sprocket|
         define_singleton_method(name) { sprocket }
         yield sprocket if block_given?
+      end
+    end
+    
+    # Appends the given +path+ to the given +sprocket+
+    # This makes sure the path is relative to the `root` path
+    # or an absolute path pointing somewhere else. It also
+    # checks if it exists before appending it.
+    def append_path(sprocket, path) # :nodoc:
+      path = root.join(path)
+      sprocket.append_path(path) if path.exist?
+    end
+    
+    # Appends the given `Array` of +paths+ to the given +sprocket+.
+    def append_paths(sprocket, paths) # :nodoc:
+      paths or return
+      paths.each do |path|
+        append_path sprocket, path
+      end
+    end
+    
+    # Returns the Javascript compression engine, based on
+    # what's set in `config.js_compressor`. If `config.js_compressor`
+    # is nil, let Tilt + Crush decide which one to use.
+    def js_compressor # :nodoc:
+      case config.js_compressor
+      when Crush::Engine
+        config.js_compressor
+      when Symbol, String
+        JS_COMPRESSORS[config.js_compressor.to_sym]
+      else
+        Crush.register_js
+        Tilt["js"]
+      end
+    end
+    
+    # Returns the CSS compression engine, based on
+    # what's set in `config.css_compressor`. If `config.css_compressor`
+    # is nil, let Tilt + Crush decide which one to use.
+    def css_compressor # :nodoc:
+      case config.css_compressor
+      when Crush::Engine
+        config.css_compressor
+      when Symbol, String
+        CSS_COMPRESSORS[config.css_compressor.to_sym]
+      else
+        Crush.register_css
+        Tilt["css"]
       end
     end
   end
