@@ -1,4 +1,5 @@
 require "padrino-helpers"
+require "rack"
 require "sprockets"
 
 module Machined
