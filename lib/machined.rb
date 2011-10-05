@@ -10,6 +10,7 @@ module Machined
   autoload :Utils,                  "machined/utils"
   
   module Helpers
+    autoload :AssetTagHelpers,      "machined/helpers/asset_tag_helpers"
     autoload :LocalsHelpers,        "machined/helpers/locals_helpers"
     autoload :OutputHelpers,        "machined/helpers/output_helpers"
     autoload :RenderHelpers,        "machined/helpers/render_helpers"

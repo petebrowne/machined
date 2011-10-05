@@ -57,8 +57,8 @@ describe Machined::CLI do
             <head lang="en">
               <meta charset="utf-8">
               <title><%= title %></title>
-              <%= stylesheet_link_tag "main" %>
-              <%= javascript_include_tag "main" %>
+              <%= stylesheet_link_tag "/assets/main" %>
+              <%= javascript_include_tag "/assets/main" %>
             </head>
             <body>
               <%= yield %>

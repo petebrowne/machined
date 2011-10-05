@@ -4,9 +4,7 @@ require "sprockets"
 
 module Machined
   class Context < Sprockets::Context
-    include Helpers::LocalsHelpers
     include Helpers::OutputHelpers
-    include Helpers::RenderHelpers
     include Padrino::Helpers::OutputHelpers
     include Padrino::Helpers::TagHelpers
     include Padrino::Helpers::AssetTagHelpers
@@ -14,6 +12,9 @@ module Machined
     include Padrino::Helpers::FormatHelpers
     include Padrino::Helpers::NumberHelpers
     include Padrino::Helpers::TranslationHelpers
+    include Helpers::AssetTagHelpers
+    include Helpers::LocalsHelpers
+    include Helpers::RenderHelpers
     
     # Override initialize to add helpers
     # from the Machined environment.
