@@ -8,9 +8,9 @@ module Machined
     
     # Creates a new Rack server that will serve
     # up the processed files.
-    def initialize(machined, output_path)
+    def initialize(machined)
       @machined = machined
-      @files    = Rack::File.new(output_path)
+      @files    = Rack::File.new(machined.output_path)
       remap
     end
     

@@ -6,15 +6,10 @@ module Machined
     # created this instance.
     attr_reader :machined
     
-    # The root path where the files should be
-    # generated.
-    attr_reader :output_path
-    
     # Creates a new instance, which will compile
     # the assets to the given +output_path+.
-    def initialize(machined, output_path)
-      @machined    = machined
-      @output_path = output_path
+    def initialize(machined)
+      @machined = machined
     end
     
     # Loop through and compile each available
@@ -44,7 +39,7 @@ module Machined
     protected
     
     def compile_asset(asset, url)
-      filename = File.join(output_path, url)
+      filename = File.join(machined.output_path, url)
       FileUtils.mkdir_p File.dirname(filename)
       asset.write_to filename
       asset.digest

@@ -59,6 +59,10 @@ module Machined
     # environment is run from.
     attr_reader :root
     
+    # A reference to the directory the Machined environment
+    # compiles its files to.
+    attr_reader :output_path
+    
     # An `Array` of the Sprockets environments (actually `Machined::Sprocket`
     # instances) that are the core of a Machined environment.
     attr_reader :sprockets
@@ -112,6 +116,9 @@ module Machined
       config_file = root.join(config.config_path)
       instance_eval config_file.read if config_file.exist?
       
+      # Handle anymore configuration related setup.
+      @output_path = root.join(config.output_path)
+      
       # Append the paths for each sprocket. The default `assets` sprocket
       # is special, because we actually append the directories within
       # the given paths (like the Rails 3.1 asset pipeline).
@@ -143,14 +150,14 @@ module Machined
     # Handles Rack requests by passing the +env+ to an instance
     # of `Machined::Server`.
     def call(env)
-      @server ||= Server.new self, root.join(config.output_path)
+      @server ||= Server.new self
       server.call(env)
     end
     
     # Loops through the available static files and generates them in
     # the output path.
     def compile
-      @static_compiler ||= StaticCompiler.new self, root.join(config.output_path)
+      @static_compiler ||= StaticCompiler.new self
       static_compiler.compile
     end
     
