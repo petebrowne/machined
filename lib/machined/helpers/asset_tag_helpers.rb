@@ -6,26 +6,46 @@ module Machined
       extend  ActiveSupport::Concern
       include Padrino::Helpers::AssetTagHelpers
       
+      # Pattern for checking if a given path
+      # is an external URI.
+      URI_MATCH = %r(^[-a-z]+://|^cid:|^//)
+      
       # Returns a path to an asset, either in the output path
       # or in the assets environment. It will default to appending
       # the old-school timestamp.
       def asset_path(kind, source)
-        AssetPath.new(machined, source, kind).to_s
+        return source if source =~ URI_MATCH
+        
+        # Append extension if necessary.
+        if [:css, :js].include?(kind)
+          source << ".#{kind}" unless source =~ /\.#{kind}$/
+        end
+        
+        # If the source points to an asset in the assets
+        # environment use `AssetPath` to generate the full path.
+        machined.assets.resolve(source) do |path|
+          return AssetPath.new(machined, machined.assets[path]).to_s
+        end
+        
+        # Default to using a basic `FilePath` to generate the
+        # full path.
+        FilePath.new(machined, source, kind).to_s
       end
       
-      # Handles creating the full path, with digest or timestamp,
-      # to the asset - whether it's just a normal file in the
-      # output path or if it's an asset in the assets environment.
-      class AssetPath
-        #
+      # `FilePath` generates a full path for a regular file
+      # in the output path. It's used by #asset_path to generate
+      # paths when using asset tags like #javascript_include_tag,
+      # #stylesheet_link_tag, and #image_tag
+      class FilePath
+        # A reference to the Machined environment.
         attr_reader :machined
         
-        #
+        # The path from which to generate the full path to the asset.
         attr_reader :source
         
-        #
+        # The expected kind of file (:css, :js, :images).
         attr_reader :kind
-        
+      
         #
         def initialize(machined, source, kind)
           @machined = machined
@@ -33,92 +53,75 @@ module Machined
           @kind     = kind
         end
         
-        # Determines if the path is a URI.
-        def uri?
-          source =~ %r(^[-a-z]+://|^cid:|^//)
-        end
-        
-        # Determines if the path is already
-        # absolute.
-        def absolute?
-          source =~ %r(^/)
-        end
-        
-        # Determines if this is an asset in the
-        # assets environment.
-        def asset?
-          !!asset
-        end
-        
-        #
+        # Returns the full path to the asset, complete with
+        # timestamp.
         def to_s
-          return source if uri?
-          path = rewrite_extension(source)
-          path = rewrite_base_path(path)
+          path = rewrite_base_path(source)
           path = rewrite_timestamp(path)
           path
         end
         
         protected
         
-        # Returns the asset for the current source path
-        # if it exists.
-        def asset
-          return @asset if defined?(@asset)
-          @asset = machined.assets.resolve(source) do |found|
-            machined.assets[found]
-          end
-          @asset
-        end
-        
-        # Returns the mtime for the given path.
-        # Uses the assets environments mtime, if it is
-        # an asset.
-        def mtime(path)
-          if asset?
-            asset.mtime
-          else
-            output_path = File.join(machined.output_path.to_s, path)
-            File.exist?(output_path) ? File.mtime(output_path) : nil
-          end
-        end
-        
-        # Returns the name of the directory the asset
-        # should be in, based on the +kind+, if it is
-        # not an asset.
-        def directory
-          case kind
-          when :css then "stylesheets"
-          when :js  then "javascripts"
-          else
-            kind.to_s
-          end
-        end
-        
-        # 
-        def rewrite_extension(path)
-          return path unless [ :css, :js ].include?(kind)
-          path << ".#{kind}" unless path =~ /\.#{kind}/
-          path
-        end
-        
-        #
-        def rewrite_base_path(path)
-          if absolute?
+        # Prepends the base path if the path is not
+        # already an absolute path.
+        def rewrite_base_path(path) # :nodoc:
+          if path =~ %r(^/)
             path
-          elsif asset?
-            File.join(machined.assets.config[:url], asset.logical_path)
           else
-            File.join("/#{kind}", path)
+            File.join(base_path, path)
           end
         end
         
-        #
-        def rewrite_timestamp(path)
+        # Appends an asset timestamp based on the
+        # modification time of the asset.
+        def rewrite_timestamp(path) # :nodoc:
           if timestamp = mtime(path)
-            path << "?#{timestamp.to_i}" unless path =~ /\?\d+$/
+            "#{path}?#{timestamp.to_i}" unless path =~ /\?\d+$/
+          else
+            path
           end
-          path
+        end
+        
+        # Returns the expected base path for this asset.
+        def base_path # :nodoc:
+          case kind
+          when :css then "/stylesheets"
+          when :js  then "/javascripts"
+          else
+            "/#{kind}"
+          end
+        end
+        
+        # Returns the mtime for the given path (relative to
+        # the output path). Returns nil if the file doesn't exist.
+        def mtime(path) # :nodoc:
+          output_path = File.join(machined.output_path.to_s, path)
+          File.exist?(output_path) ? File.mtime(output_path) : nil
+        end
+      end
+      
+      # `AssetPath` generates a full path for an asset
+      # that exists in Machined's `assets` environment.
+      class AssetPath < FilePath
+        # A reference to the asset to create the path for.
+        attr_reader :asset
+        
+        #
+        def initialize(machined, asset)
+          @machined = machined
+          @asset    = asset
+          @source   = asset.logical_path
+        end
+        
+        protected
+        
+        def base_path
+          machined.assets.config[:url]
+        end
+        
+        def mtime(path)
+          asset.mtime
         end
       end
     end
