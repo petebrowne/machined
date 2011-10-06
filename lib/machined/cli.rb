@@ -47,8 +47,7 @@ module Machined
       :desc => "Run daemonized in the background",
       :type => :boolean
     method_option :pid, :aliases => "-P",
-      :desc => "File to store PID",
-      :default => "machined.pid"
+      :desc => "File to store PID"
     def server
       require "rack"
       Rack::Server.start rack_options
