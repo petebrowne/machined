@@ -109,21 +109,21 @@ module Machined
         def initialize(machined, asset)
           @machined = machined
           @asset    = asset
-          @source   = machined.config.digest_assets ? asset.digest_path : asset.logical_path
+          @source   = digest? ? asset.digest_path : asset.logical_path
         end
         
         protected
         
         def rewrite_timestamp(path)
-          if machined.config.digest_assets
-            path
-          else
-            super
-          end
+          digest? ? path : super
+        end
+        
+        def digest?
+          machined.config.digest_assets
         end
         
         def base_path
-          machined.assets.config[:url]
+          machined.assets.config.url
         end
         
         def mtime(path)

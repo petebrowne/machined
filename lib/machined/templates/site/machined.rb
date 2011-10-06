@@ -7,6 +7,9 @@ if config.environment == "production"
   
   # Generate digests for assets URLs
   # config.digest_assets = true
+  
+  # Create gzipped versions of javascripts and stylesheets
+  # config.gzip_assets = true
 end
 
 helpers do

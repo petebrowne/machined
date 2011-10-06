@@ -1,3 +1,4 @@
+require "ostruct"
 require "sprockets"
 
 module Machined
@@ -21,11 +22,13 @@ module Machined
     # allow for per-Sprockets-environment configuration
     # and to keep a reference to the Machined environment.
     def initialize(machined, options = {})
-      @config = DEFAULT_OPTIONS.dup.merge options
-      super config[:root]
       @machined = machined
+      @config   = OpenStruct.new DEFAULT_OPTIONS.dup.merge(options)
+      
+      super config.root
+      
       @context_class = Class.new Context
-      use_all_templates unless config[:assets]
+      use_all_templates unless config.assets
     end
     
     # Returns true, if this sprocket should be
@@ -34,7 +37,7 @@ module Machined
     # the default views sprocket - it is used as
     # a uncompiled resource.
     def compile?
-      config[:compile] != false && !config[:url].nil?
+      config.compile && config.url
     end
     
     # Loops through the available Tilt templates

@@ -46,7 +46,7 @@ describe Machined::Environment do
     
     it "initializes the sprocket with configuration" do
       sprocket = machined.append_sprocket :updates, :root => "spec/machined"
-      sprocket.config[:root].should == "spec/machined"
+      sprocket.root.should == File.expand_path("spec/machined")
     end
   end
   

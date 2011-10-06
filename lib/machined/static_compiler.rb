@@ -19,7 +19,7 @@ module Machined
       machined.sprockets.each do |sprocket|
         next unless sprocket.compile?
         sprocket.each_logical_path do |logical_path|
-          url = File.join(sprocket.config[:url], logical_path)
+          url = File.join(sprocket.config.url, logical_path)
           next unless compiled_assets[url].nil? && compile?(url)
           
           if asset = sprocket.find_asset(logical_path)
@@ -37,22 +37,35 @@ module Machined
       File.basename(url) !~ /^_/
     end
     
-    protected
-    
+    # Writes the asset to its destination, also
+    # writing a gzipped version if necessary.
     def write_asset(asset)
       filename = path_for(asset)
       FileUtils.mkdir_p File.dirname(filename)
       asset.write_to filename
+      asset.write_to "#{filename}.gz" if gzip?(filename)
       asset.digest
     end
     
-    def path_for(asset)
+    protected
+    
+    # Gets the full output path for the given asset.
+    # If it's supposed to include a digest, it will return the
+    # digest_path.
+    def path_for(asset) # :nodoc:
       path = digest?(asset) ? asset.digest_path : asset.logical_path
-      File.join(machined.output_path, asset.environment.config[:url], path)
+      File.join(machined.output_path, asset.environment.config.url, path)
     end
     
-    def digest?(asset)
-      machined.config.digest_assets && asset.environment.config[:assets]
+    # Determines if we should use the digest_path for the given
+    # asset.
+    def digest?(asset) # :nodoc:
+      machined.config.digest_assets && asset.environment.config.assets
+    end
+    
+    # Determines if we should gzip the asset.
+    def gzip?(filename) # :nodoc:
+      machined.config.gzip_assets && filename =~ /\.(css|js)$/
     end
   end
 end

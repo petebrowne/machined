@@ -66,4 +66,20 @@ describe Machined::StaticCompiler do
       File.exist?("public/index.html").should be_true
     end
   end
+  
+  it "generates gzipped files when configured" do
+    within_construct do |c|
+      c.file "assets/javascripts/main.js"
+      c.file "assets/stylesheets/main.css"
+      c.file "assets/images/logo.jpg"
+      c.file "pages/index.html"
+      
+      machined(:gzip_assets => true).compile
+      
+      File.exist?("public/assets/main.js.gz").should be_true
+      File.exist?("public/assets/main.css.gz").should be_true
+      File.exist?("public/assets/logo.jpg.gz").should_not be_true
+      File.exist?("public/index.html.gz").should_not be_true
+    end
+  end
 end

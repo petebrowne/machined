@@ -1,45 +1,56 @@
 require "ostruct"
 require "pathname"
 require "active_support/core_ext/hash/reverse_merge"
-require "crush"
-require "tilt"
+require "active_support/core_ext/string/inflections"
 
 module Machined
   class Environment
     # Default options for a Machined environment.
     DEFAULT_OPTIONS = {
-      :root         => ".",
-      :config_path  => "machined.rb",
-      :output_path  => "public",
-      :assets_path  => "assets",
-      :assets_paths => %w(lib/assets vendor/assets),
-      :assets_url   => "/assets",
-      :pages_path   => "pages",
-      :pages_url    => "/",
-      :views_path   => "views",
-      :environment  => "development",
-      :layout       => "main"
+      # Global configuration
+      :root           => ".",
+      :config_path    => "machined.rb",
+      :output_path    => "public",
+      :environment    => "development",
+      :digest_assets  => false,
+      :gzip_assets    => false,
+      :layout         => "main",
+      
+      # Sprocket paths and URLs
+      :assets_path    => "assets",
+      :assets_paths   => %w(lib/assets vendor/assets),
+      :assets_url     => "/assets",
+      :pages_path     => "pages",
+      :pages_url      => "/",
+      :views_path     => "views",
+      
+      # Compression configuration
+      :compress       => false,
+      :compress_css   => false,
+      :compress_js    => false,
+      :css_compressor => nil,
+      :js_compressor  => nil
     }.freeze
     
     # A hash of Javascript compressors. When `config.js_compressor`
     # is set using a symbol, such as `:uglifier`, this is where
     # we check which engine to use.
     JS_COMPRESSORS = {
-      :jsmin    => Crush::JSMin,
-      :packr    => Crush::Packr,
-      :yui      => Crush::YUI::JavaScriptCompressor,
-      :closure  => Crush::Closure::Compiler,
-      :uglifier => Crush::Uglifier
+      :jsmin    => "Crush::JSMin",
+      :packr    => "Crush::Packr",
+      :yui      => "Crush::YUI::JavaScriptCompressor",
+      :closure  => "Crush::Closure::Compiler",
+      :uglifier => "Crush::Uglifier"
     }
     
     # A hash of CSS compressors. When `config.css_compressor`
     # is set using a symbol, such as `:sass`, this is where
     # we check which engine to use.
     CSS_COMPRESSORS = {
-      :cssmin    => Crush::CSSMin,
-      :rainpress => Crush::Rainpress,
-      :yui       => Crush::YUI::CssCompressor,
-      :sass      => Crush::Sass::Engine
+      :cssmin    => "Crush::CSSMin",
+      :rainpress => "Crush::Rainpress",
+      :yui       => "Crush::YUI::CssCompressor",
+      :sass      => "Crush::Sass::Engine"
     }
     
     # The global configuration for the Machined
@@ -132,8 +143,8 @@ module Machined
       end
       
       # Set the URLs for the compilable default sprockets.
-      assets.config[:url] = config.assets_url
-      pages.config[:url]  = config.pages_url
+      assets.config.url = config.assets_url
+      pages.config.url  = config.pages_url
       
       # Now setup assets compression.
       if config.compress
@@ -165,13 +176,13 @@ module Machined
     # and appends it to the #sprockets list. This will also create
     # an accessor with the given name that references the created sprocket.
     #
-    #   machined.append_sprocket :updates, :map => "/news" do |updates|
+    #   machined.append_sprocket :updates, :url => "/news" do |updates|
     #     updates.append_path "updates"
     #   end
     #   
-    #   machined.updates              # => #<Machined::Sprocket...>
-    #   machined.updates.config[:map] # => "/news"
-    #   machined.updates.paths        # => [ ".../updates" ]
+    #   machined.updates            # => #<Machined::Sprocket...>
+    #   machined.updates.config.url # => "/news"
+    #   machined.updates.paths      # => [ ".../updates" ]
     #
     def append_sprocket(name, options = {}, &block)
       create_sprocket(name, options, &block).tap do |sprocket|
@@ -260,9 +271,10 @@ module Machined
       when Crush::Engine
         config.js_compressor
       when Symbol, String
-        JS_COMPRESSORS[config.js_compressor.to_sym]
+        require "crush"
+        JS_COMPRESSORS[config.js_compressor.to_sym].constantize
       else
-        Crush.register_js
+        require "crush/js"
         Tilt["js"]
       end
     end
@@ -275,9 +287,10 @@ module Machined
       when Crush::Engine
         config.css_compressor
       when Symbol, String
-        CSS_COMPRESSORS[config.css_compressor.to_sym]
+        require "crush"
+        CSS_COMPRESSORS[config.css_compressor.to_sym].constantize
       else
-        Crush.register_css
+        require "crush/css"
         Tilt["css"]
       end
     end

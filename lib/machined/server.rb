@@ -29,7 +29,7 @@ module Machined
       map = {}
       machined.sprockets.each do |sprocket|
         next unless sprocket.compile?
-        map[sprocket.config[:url]] = sprocket
+        map[sprocket.config.url] = sprocket
       end
       @url_map = Rack::URLMap.new map
     end
