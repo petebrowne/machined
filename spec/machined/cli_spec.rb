@@ -57,8 +57,8 @@ describe Machined::CLI do
             <head lang="en">
               <meta charset="utf-8">
               <title><%= title %></title>
-              <%= stylesheet_link_tag "/assets/main" %>
-              <%= javascript_include_tag "/assets/main" %>
+              <%= stylesheet_link_tag "main" %>
+              <%= javascript_include_tag "main" %>
             </head>
             <body>
               <%= yield %>
@@ -92,6 +92,10 @@ describe Machined::CLI do
           
           gem "sass", "~> 3.1"
           gem "coffee-script", "~> 2.2"
+          
+          group :production do
+            gem "uglifier", "~> 1.0"
+          end
         CONTENT
       end
     end

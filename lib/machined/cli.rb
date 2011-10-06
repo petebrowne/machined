@@ -1,6 +1,5 @@
 require "active_support/core_ext/hash/keys"
 require "active_support/core_ext/hash/slice"
-require "rack"
 require "thor"
 
 module Machined
@@ -51,6 +50,7 @@ module Machined
       :desc => "File to store PID",
       :default => "machined.pid"
     def server
+      require "rack"
       Rack::Server.start rack_options
     end
     map %w(s rackup r) => :server

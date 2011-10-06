@@ -1,7 +1,8 @@
 require "ostruct"
 require "pathname"
 require "active_support/core_ext/hash/reverse_merge"
-require "active_support/core_ext/string/inflections"
+require "crush"
+require "tilt"
 
 module Machined
   class Environment
@@ -36,21 +37,21 @@ module Machined
     # is set using a symbol, such as `:uglifier`, this is where
     # we check which engine to use.
     JS_COMPRESSORS = {
-      :jsmin    => "Crush::JSMin",
-      :packr    => "Crush::Packr",
-      :yui      => "Crush::YUI::JavaScriptCompressor",
-      :closure  => "Crush::Closure::Compiler",
-      :uglifier => "Crush::Uglifier"
+      :jsmin    => Crush::JSMin,
+      :packr    => Crush::Packr,
+      :yui      => Crush::YUI::JavaScriptCompressor,
+      :closure  => Crush::Closure::Compiler,
+      :uglifier => Crush::Uglifier
     }
     
     # A hash of CSS compressors. When `config.css_compressor`
     # is set using a symbol, such as `:sass`, this is where
     # we check which engine to use.
     CSS_COMPRESSORS = {
-      :cssmin    => "Crush::CSSMin",
-      :rainpress => "Crush::Rainpress",
-      :yui       => "Crush::YUI::CssCompressor",
-      :sass      => "Crush::Sass::Engine"
+      :cssmin    => Crush::CSSMin,
+      :rainpress => Crush::Rainpress,
+      :yui       => Crush::YUI::CssCompressor,
+      :sass      => Crush::Sass::Engine
     }
     
     # The global configuration for the Machined
@@ -271,10 +272,9 @@ module Machined
       when Crush::Engine
         config.js_compressor
       when Symbol, String
-        require "crush"
-        JS_COMPRESSORS[config.js_compressor.to_sym].constantize
+        JS_COMPRESSORS[config.js_compressor.to_sym]
       else
-        require "crush/js"
+        Crush.register_js
         Tilt["js"]
       end
     end
@@ -287,10 +287,9 @@ module Machined
       when Crush::Engine
         config.css_compressor
       when Symbol, String
-        require "crush"
-        CSS_COMPRESSORS[config.css_compressor.to_sym].constantize
+        CSS_COMPRESSORS[config.css_compressor.to_sym]
       else
-        require "crush/css"
+        Crush.register_css
         Tilt["css"]
       end
     end

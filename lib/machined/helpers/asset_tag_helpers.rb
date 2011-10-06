@@ -24,7 +24,7 @@ module Machined
         # If the source points to an asset in the assets
         # environment use `AssetPath` to generate the full path.
         machined.assets.resolve(source) do |path|
-          return AssetPath.new(machined, machined.assets[path]).to_s
+          return AssetPath.new(machined, machined.assets.find_asset(path)).to_s
         end
         
         # Default to using a basic `FilePath` to generate the
