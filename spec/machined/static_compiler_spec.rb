@@ -45,4 +45,25 @@ describe Machined::StaticCompiler do
       CONTENT
     end
   end
+  
+  it "generates digests when configured" do
+    within_construct do |c|
+      c.file "_/js/main.js", "var app = {};"
+      c.file "_/css/main.css", "body { color: red; }"
+      c.file "_/img/logo.jpg"
+      c.file "pages/index.html"
+      
+      machined(:digest_assets => true, :assets_url => "/_", :assets_path => "_").compile
+      
+      asset = machined.assets["main.js"]
+      File.read("public/_/main-#{asset.digest}.js").should == "var app = {};\n"
+      asset = machined.assets["main.css"]
+      File.read("public/_/main-#{asset.digest}.css").should == "body { color: red; }\n"
+      asset = machined.assets["logo.jpg"]
+      File.exist?("public/_/logo-#{asset.digest}.jpg").should be_true
+      asset = machined.pages["index.html"]
+      File.exist?("public/index-#{asset.digest}.html").should be_false
+      File.exist?("public/index.html").should be_true
+    end
+  end
 end

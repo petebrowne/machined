@@ -79,6 +79,17 @@ describe Machined::Helpers::AssetTagHelpers do
           asset_path(:js, "main").should == "/assets/main.js?#{mtime.to_i}"
         end
       end
+      
+      it "uses the digest path if configured" do
+        within_construct do |c|
+          c.file "assets/javascrtips/main.js"
+          
+          machined :digest_assets => true
+          
+          asset = machined.assets["main.js"]
+          asset_path(:js, "main").should == "/assets/main-#{asset.digest}.js"
+        end
+      end
     end
   end
 end

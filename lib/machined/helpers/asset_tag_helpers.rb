@@ -104,17 +104,23 @@ module Machined
       # `AssetPath` generates a full path for an asset
       # that exists in Machined's `assets` environment.
       class AssetPath < FilePath
-        # A reference to the asset to create the path for.
         attr_reader :asset
         
-        #
         def initialize(machined, asset)
           @machined = machined
           @asset    = asset
-          @source   = asset.logical_path
+          @source   = machined.config.digest_assets ? asset.digest_path : asset.logical_path
         end
         
         protected
+        
+        def rewrite_timestamp(path)
+          if machined.config.digest_assets
+            path
+          else
+            super
+          end
+        end
         
         def base_path
           machined.assets.config[:url]

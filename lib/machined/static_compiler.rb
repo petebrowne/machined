@@ -21,8 +21,9 @@ module Machined
         sprocket.each_logical_path do |logical_path|
           url = File.join(sprocket.config[:url], logical_path)
           next unless compiled_assets[url].nil? && compile?(url)
-          if asset = sprocket[logical_path]
-            compiled_assets[url] = compile_asset(asset, url)
+          
+          if asset = sprocket.find_asset(logical_path)
+            compiled_assets[url] = write_asset(asset)
           end
         end
       end
@@ -38,11 +39,20 @@ module Machined
     
     protected
     
-    def compile_asset(asset, url)
-      filename = File.join(machined.output_path, url)
+    def write_asset(asset)
+      filename = path_for(asset)
       FileUtils.mkdir_p File.dirname(filename)
       asset.write_to filename
       asset.digest
+    end
+    
+    def path_for(asset)
+      path = digest?(asset) ? asset.digest_path : asset.logical_path
+      File.join(machined.output_path, asset.environment.config[:url], path)
+    end
+    
+    def digest?(asset)
+      machined.config.digest_assets && asset.environment.config[:assets]
     end
   end
 end
