@@ -58,7 +58,7 @@ module Machined
             template = processor.new(layout_path.to_s) { result }
             result   = template.render(context, {}) { data }
           rescue Exception => e
-            context.annotate_exception! e
+            context.send :annotate_exception!, e
             raise
           end
         end
