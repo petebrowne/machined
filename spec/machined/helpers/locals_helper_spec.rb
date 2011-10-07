@@ -34,4 +34,20 @@ describe Machined::Helpers::LocalsHelpers do
       end
     end
   end
+  
+  describe "#with_locals" do
+    it "temporarily changes the local variables" do
+      with_context do |context, output|
+        context.locals = { :title => "Hello World", :layout => "main" }
+        context.with_locals(:layout => false, :body => "...") do
+          context.title.should == "Hello World"
+          context.body.should == "..."
+          context.layout.should be_false
+        end
+        context.title.should == "Hello World"
+        context.layout.should == "main"
+        context.respond_to?(:body).should be_false
+      end
+    end
+  end
 end

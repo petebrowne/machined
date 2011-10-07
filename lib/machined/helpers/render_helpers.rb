@@ -88,20 +88,26 @@ module Machined
         template = resolve_partial(partial)
         depend_on template
         
+        partial_locals = {}
+        
         # Add object with the name of the partial
         # as the local variable name.
         if object = options.delete(:object)
           object_name = options.delete(:as) || template.to_s[/_?(\w+)(\.\w+)*$/, 1]
-          self.locals[object_name] = object
-          self.locals["#{object_name}_counter"] = options.delete(:counter)
+          partial_locals[object_name] = object
+          partial_locals["#{object_name}_counter"] = options.delete(:counter)
         end
         
         # Add locals from leftover options
-        if locals = options.delete(:locals) || options
-          self.locals = locals
+        if leftover_locals = options.delete(:locals) || options
+          partial_locals.merge!(leftover_locals)
         end
         
-        evaluate_without_processor template, Machined::Processors::LayoutProcessor
+        # Temporarily use a different layout (default to no layout)
+        partial_locals[:layout] = options.delete(:layout) || false
+        
+        # Now evaluate the partial
+        with_locals(partial_locals) { return evaluate(template) }
       end
       
       protected
@@ -123,15 +129,6 @@ module Machined
         end
         
         raise Sprockets::FileNotFound, "couldn't find file '#{path}'"
-      end
-      
-      # Evaluates the given path without using the given processor.
-      # This is used to evaluate templates without wrapping
-      # them in layouts.
-      def evaluate_without_processor(path, processor) # :nodoc:
-        processors = environment.attributes_for(path).processors.dup
-        processors.delete processor
-        evaluate path, :processors => processors
       end
     end
   end

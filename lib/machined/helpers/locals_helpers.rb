@@ -6,6 +6,13 @@ module Machined
     module LocalsHelpers
       extend ActiveSupport::Concern
       
+      # Returns the locals hash. It's actually an instance
+      # of `ActiveSupport::HashWithIndifferentAccess`, so strings
+      # and symbols can be used interchangeably.
+      def locals
+        @locals ||= ActiveSupport::HashWithIndifferentAccess.new
+      end
+      
       # Adds psuedo local variables from the given hash, where
       # the key is the name of the variable. This is provided so
       # processors can add local variables without having access
@@ -18,11 +25,14 @@ module Machined
         end
       end
       
-      # Returns the locals hash. It's actually an instance
-      # of `ActiveSupport::HashWithIndifferentAccess`, so strings
-      # and symbols can be used interchangeably.
-      def locals
-        @locals ||= ActiveSupport::HashWithIndifferentAccess.new
+      # Temporarily changes the locals. The given +temporary_locals+
+      # will be merged into the current locals. After the block is
+      # executed, the locals will be restored to their original state.
+      def with_locals(temporary_locals)
+        old_locals, self.locals = self.locals.dup, temporary_locals
+        yield
+      ensure
+        @locals = old_locals
       end
       
       # Returns true if the given +name+ has been set as a local
