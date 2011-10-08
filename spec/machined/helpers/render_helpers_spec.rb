@@ -31,12 +31,53 @@ describe Machined::Helpers::RenderHelpers do
       end
     end
     
+    it "returns the original locals state once rendered" do
+      within_construct do |c|
+        c.file "pages/index.html.erb", <<-CONTENT.unindent
+          ---
+          title: Hello World
+          ---
+          <%= render "partial", :title => "Title...", :text => "Text..." %>
+          title: <%= title %>
+          text: <%= respond_to?(:text) %>
+        CONTENT
+        c.file "views/partial.html.erb", "title: <%= title %>\ntext: <%= text %>\n"
+        
+        machined.pages["index.html"].to_s.should == <<-CONTENT.unindent
+          title: Title...
+          text: Text...
+          title: Hello World
+          text: false
+        CONTENT
+      end
+    end
+    
     it "renders partial collections" do
       within_construct do |c|
         c.file "pages/index.html.erb", %(<%= render "number", :collection => [1,2,3] %>)
         c.file "views/number.haml", "= number\n= number_counter"
         
         machined.pages["index.html"].to_s.should == "1\n1\n2\n2\n3\n3\n"
+      end
+    end
+    
+    it "does not wrap the partial in a layout" do
+      within_construct do |c|
+        c.file "pages/index.html.erb", %(<%= render "partial" %>)
+        c.file "views/layouts/main.html.erb", "<h1><%= yield %></h1>"
+        c.file "views/partial.html.erb", "Hello World"
+        
+        machined.pages["index.html"].to_s.should == "<h1>Hello World</h1>"
+      end
+    end
+    
+    it "optionally wraps the partial in a layout" do
+      within_construct do |c|
+        c.file "pages/index.html.erb", %(<%= render "partial", :layout => "partial" %>)
+        c.file "views/layouts/partial.html.erb", "<h1><%= yield %></h1>"
+        c.file "views/partial.html.erb", "Hello World"
+        
+        machined.pages["index.html"].to_s.should == "<h1>Hello World</h1>"
       end
     end
     
