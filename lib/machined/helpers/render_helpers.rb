@@ -90,6 +90,9 @@ module Machined
         
         partial_locals = {}
         
+        # Temporarily use a different layout (default to no layout)
+        partial_locals[:layout] = options.delete(:layout) || false
+        
         # Add object with the name of the partial
         # as the local variable name.
         if object = options.delete(:object)
@@ -102,9 +105,6 @@ module Machined
         if leftover_locals = options.delete(:locals) || options
           partial_locals.merge!(leftover_locals)
         end
-        
-        # Temporarily use a different layout (default to no layout)
-        partial_locals[:layout] = options.delete(:layout) || false
         
         # Now evaluate the partial
         with_locals(partial_locals) { return evaluate(template) }
