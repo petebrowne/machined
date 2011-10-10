@@ -13,6 +13,7 @@ module Machined
     autoload :AssetTagHelpers,      "machined/helpers/asset_tag_helpers"
     autoload :LocalsHelpers,        "machined/helpers/locals_helpers"
     autoload :OutputHelpers,        "machined/helpers/output_helpers"
+    autoload :PageHelpers,          "machined/helpers/page_helpers"
     autoload :RenderHelpers,        "machined/helpers/render_helpers"
   end
   

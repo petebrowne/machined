@@ -41,16 +41,6 @@ module Machined
         locals.key? name
       end
       
-      # Returns the default layout, unless overridden by
-      # the YAML front matter.
-      def layout
-        if has_local?(:layout)
-          locals[:layout]
-        else
-          machined.config.layout
-        end
-      end
-      
       def method_missing(method, *args, &block) # :nodoc:
         if args.empty? && has_local?(method)
           locals[method]

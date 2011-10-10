@@ -13,7 +13,6 @@ describe Machined::Helpers::RenderHelpers do
         c.file "views/_partial2.haml", "%p Here's some Content..."
         c.file "views/partials/_partial3.html", "<p>And some more</p>\n"
         
-        # puts machined.views.paths.inspect
         machined.pages["index.html"].to_s.should == <<-CONTENT.unindent
           <h1>Hello World</h1>
           <p>Here's some Content...</p>
@@ -78,6 +77,22 @@ describe Machined::Helpers::RenderHelpers do
         c.file "views/partial.html.erb", "Hello World"
         
         machined.pages["index.html"].to_s.should == "<h1>Hello World</h1>"
+      end
+    end
+    
+    it "adds the partial as a dependency" do
+      within_construct do |c|
+        c.file "pages/index.html.erb", %(<%= render "partial" %>)
+        dep = c.file "views/partial.haml", "Hello World"
+        
+        asset = machined.pages["index.html"]
+        asset.should be_fresh
+          
+        dep.open("w") { |f| f.write("%h1 Hello World") }
+        mtime = Time.now + 600
+        dep.utime mtime, mtime
+        
+        asset.should be_stale
       end
     end
     

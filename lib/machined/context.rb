@@ -14,6 +14,7 @@ module Machined
     include Padrino::Helpers::TranslationHelpers
     include Helpers::AssetTagHelpers
     include Helpers::LocalsHelpers
+    include Helpers::PageHelpers
     include Helpers::RenderHelpers
     
     # Override initialize to add helpers
@@ -31,12 +32,6 @@ module Machined
     # Returns the configuration of the Machined environment.
     def config
       machined.config
-    end
-    
-    # Returns the URL to this asset, appending the sprocket's URL.
-    # For HTML files, this will return pretty URLs.
-    def url
-      File.join(environment.config.url, @logical_path).sub /(index)?\.html$/, ''
     end
     
     protected

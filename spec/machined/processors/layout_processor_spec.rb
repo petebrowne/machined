@@ -29,4 +29,20 @@ describe Machined::Processors::LayoutProcessor do
       machined.pages["index.html"].to_s.should == "<h1>Hello World</h1>"
     end
   end
+  
+  it "adds the layout file as a dependency" do
+    within_construct do |c|
+      c.file "pages/index.html", "<h1>Hello World</h1>"
+      dep = c.file "views/layouts/main.html.haml", "= yield"
+      
+      asset = machined.pages["index.html"]
+      asset.should be_fresh
+        
+      dep.open("w") { |f| f.write("#layout= yield") }
+      mtime = Time.now + 600
+      dep.utime mtime, mtime
+      
+      asset.should be_stale
+    end
+  end
 end

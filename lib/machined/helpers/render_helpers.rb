@@ -38,7 +38,7 @@ module Machined
       def render_collection(collection, partial, options = {})
         return if collection.nil? || collection.empty?
         
-        template = resolve_partial(partial)
+        template = resolve_partial partial
         counter  = 0
         collection.inject('') do |output, object|
           counter += 1
@@ -85,7 +85,7 @@ module Machined
       #   <%= render_partial "account", :locals => { :user => buyer } %>
       #
       def render_partial(partial, options = {})
-        template = resolve_partial(partial)
+        template = resolve_partial partial
         depend_on template
         
         partial_locals = {}
@@ -98,16 +98,16 @@ module Machined
         if object = options.delete(:object)
           object_name = options.delete(:as) || template.to_s[/_?(\w+)(\.\w+)*$/, 1]
           partial_locals[object_name] = object
-          partial_locals["#{object_name}_counter"] = options.delete(:counter)
+          partial_locals["#{object_name}_counter"] = options.delete :counter
         end
         
         # Add locals from leftover options
         if leftover_locals = options.delete(:locals) || options
-          partial_locals.merge!(leftover_locals)
+          partial_locals.merge! leftover_locals
         end
         
         # Now evaluate the partial
-        with_locals(partial_locals) { return evaluate(template) }
+        with_locals(partial_locals) { return evaluate template }
       end
       
       protected
@@ -116,7 +116,7 @@ module Machined
       # while also looking for a version with a partial-style
       # name (prefixed with an "_").
       def resolve_partial(path) # :nodoc:
-        path = Pathname.new(path)
+        path = Pathname.new path
         path.absolute? and return path
         
         # First look for the normal path
@@ -124,7 +124,7 @@ module Machined
         
         # Then look for the partial-style version
         unless path.basename.to_s =~ /^_/
-          partial = path.dirname.join("_#{path.basename}")
+          partial = path.dirname.join "_#{path.basename}"
           machined.views.resolve(partial) { |found| return found }
         end
         
