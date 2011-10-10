@@ -33,6 +33,12 @@ module Machined
       machined.config
     end
     
+    # Returns the URL to this asset, appending the sprocket's URL.
+    # For HTML files, this will return pretty URLs.
+    def url
+      File.join(environment.config.url, @logical_path).sub /(index)?\.html$/, ''
+    end
+    
     protected
     
     # Loops through the helpers added to the Machined
