@@ -3,7 +3,12 @@ require "spec_helper"
 describe Machined::Server do
   include Rack::Test::Methods
   
-  let(:app) { machined }
+  let(:app) do
+    Rack::Builder.new.tap do |app|
+      app.use Rack::ShowExceptions
+      app.run machined
+    end.to_app
+  end
   
   it "serves up assets at the asset url" do
     within_construct do |c|
@@ -72,6 +77,21 @@ describe Machined::Server do
       get "/index.html"
       last_response.body.should == "<h1>Hello World</h1>\n"
       last_response.content_type.should == "text/html"
+    end
+  end
+  
+  it "does not raise Sprockets::CircularDependency error after an error" do
+    within_construct do |c|
+      c.file "pages/index.html.haml", "%p Hello\n  World"
+      
+      get "/"
+      last_response.should_not be_ok
+      
+      c.file "pages/index.html.erb", "<h1>Hello World</h1>\n"
+      
+      get "/"
+      last_response.should be_ok
+      last_response.body.should == "<h1>Hello World</h1>\n"
     end
   end
 end
