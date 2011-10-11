@@ -18,9 +18,7 @@ module Machined
     # should handle the request and then...let it
     # handle it.
     def call(env)
-      if machined.config.environment == "development"
-        machined.sprockets.each(&:expire_index!)
-      end
+      refresh if machined.config.environment == "development"
       response = @url_map.call(env)
       response = @files.call(env) if response.first == 404
       response
@@ -35,6 +33,15 @@ module Machined
         map[sprocket.config.url] = sprocket
       end
       @url_map = Rack::URLMap.new map
+    end
+    
+    protected
+    
+    # Refreshes the environment
+    def refresh
+      machined.sprockets.each do |sprocket|
+        sprocket.send :expire_index!
+      end
     end
   end
 end
