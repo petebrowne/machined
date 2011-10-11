@@ -1,5 +1,6 @@
 require "ostruct"
 require "sprockets"
+require "sprockets-sass"
 
 module Machined
   class Sprocket < Sprockets::Environment
