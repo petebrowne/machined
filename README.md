@@ -12,18 +12,19 @@ Installation
 $ gem install machined
 ```
 
-Getting Started
----------------
+Quick Start
+-----------
     
 ``` bash
-$ machined new example.com
+$ machined new blog
 ```
 
 This creates a directory with the default Machined project structure. More on that later. Let's start up the Machined server:
 
 ``` bash
-$ cd example.com
-$ machined server
+$ cd blog
+$ bundle install
+$ bundle exec machined server
 ```
 
 Now that the server is running, edit your pages, assets, etc. and view the results. Most static site servers need to recompile the _entire_ site each time a request is made. Machined (well really Sprockets) is smart enough to compile only what you request, so developing is super fast.
@@ -34,14 +35,13 @@ Deploying a Static Website
 Once you've created your site, it's time to go live. On your production box, you just need to compile the site and let Apache, Nginx, or whatever handle the serving. It'll be fast - damn fast.
 
 ``` bash
-$ cd example.com
-$ machined compile --environment production
+$ bundle exec machined compile --environment production
 ```
 
 Diving In
 ---------
 
-TODO...
+Read the [full documentation](https://github.com/petebrowne/machined/wiki).
 
 Copyright
 ---------
