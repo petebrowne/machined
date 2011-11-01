@@ -1,12 +1,8 @@
 require "pathname"
-require "active_support/concern"
 
 module Machined
   module Helpers
     module RenderHelpers
-      extend  ActiveSupport::Concern
-      include LocalsHelpers
-      
       # This is the short form of both #render_partial and #render_collection.
       # It works exactly like #render_partial, except if you pass the
       # +:collection+ option:

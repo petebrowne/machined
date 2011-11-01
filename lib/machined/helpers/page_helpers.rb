@@ -1,12 +1,8 @@
-require "active_support/concern"
 require "active_support/core_ext/string/inflections"
 
 module Machined
   module Helpers
     module PageHelpers
-      extend  ActiveSupport::Concern
-      include LocalsHelpers
-    
       # Returns the context of the given path. This is useful
       # if you want to get the information from the front matter
       # of a specific page.

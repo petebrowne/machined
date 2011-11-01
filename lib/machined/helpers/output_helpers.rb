@@ -1,4 +1,3 @@
-require "active_support/concern"
 require "active_support/memoizable"
 require "tilt"
 
@@ -9,7 +8,6 @@ Tilt::ERBTemplate.default_output_variable = "@_out_buf"
 module Machined
   module Helpers
     module OutputHelpers
-      extend ActiveSupport::Concern
       extend ActiveSupport::Memoizable
       
       # A hash of Tilt templates that support

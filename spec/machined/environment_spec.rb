@@ -69,9 +69,8 @@ describe Machined::Environment do
           "world"
         end
       end
-      with_context do |context, output|
-        context.hello.should == "world"
-      end
+      
+      context.hello.should == "world"
     end
     
     it "adds methods defined in the given module to the Context" do
@@ -81,9 +80,7 @@ describe Machined::Environment do
         end
       end
       machined.helpers helper
-      with_context do |context, output|
-        context.hello.should == "world"
-      end
+      context.hello.should == "world"
     end
   end
   

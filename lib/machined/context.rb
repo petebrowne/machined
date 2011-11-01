@@ -1,6 +1,7 @@
 require "padrino-helpers"
 require "rack"
 require "sprockets"
+require "sprockets-helpers"
 
 module Machined
   class Context < Sprockets::Context

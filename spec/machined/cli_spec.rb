@@ -43,7 +43,7 @@ describe Machined::CLI do
           title: Home Page
           ---
           <h1><%= title %></h1>
-          <p>Find me in pages/index.erb</p>
+          <p>Find me in pages/index.html.erb</p>
         CONTENT
       end
     end

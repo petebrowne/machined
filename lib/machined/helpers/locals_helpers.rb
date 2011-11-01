@@ -1,11 +1,8 @@
-require "active_support/concern"
 require "active_support/hash_with_indifferent_access"
 
 module Machined
   module Helpers
     module LocalsHelpers
-      extend ActiveSupport::Concern
-      
       # Returns the locals hash. It's actually an instance
       # of `ActiveSupport::HashWithIndifferentAccess`, so strings
       # and symbols can be used interchangeably.

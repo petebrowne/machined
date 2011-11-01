@@ -157,6 +157,15 @@ module Machined
       end
       assets.js_compressor  = js_compressor  if config.compress_js
       assets.css_compressor = css_compressor if config.compress_css
+      
+      # Finally, configure Sprockets::Helpers
+      # match curernt configuration.
+      Sprockets::Helpers.configure do |helpers|
+        helpers.environment = assets
+        helpers.digest      = config.digest_assets
+        helpers.prefix      = config.assets_url
+        helpers.public_path = config.output_path.to_s
+      end
     end
     
     # Handles Rack requests by passing the +env+ to an instance

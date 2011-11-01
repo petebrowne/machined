@@ -1,3 +1,5 @@
+require "pathname"
+
 module Machined
   module SpecHelpers
     # Convenience method for creating a new Machined environment
@@ -12,22 +14,13 @@ module Machined
       Machined::Sprocket.new machined, config
     end
   
-    # Yields a real context instance, created from
-    # a file with the given +content+. The processed
-    # output from the file is the second yielded param.
-    def with_context(content = "")
-      within_construct do |c|
-        # Create the necessary files
-        path = c.directory "context"
-        path.file "machined.css.erb", content
+    # Returns a fresh context, that can be used to test helpers.
+    def context(logical_path = "application.js", options = {})
+      @context ||= begin
+        pathname = options[:pathname] || Pathname.new(File.join("assets", logical_path)).expand_path
+        env      = options[:env] || machined.assets
         
-        # Create a sprocket that points to the correct dir
-        sprocket = create_sprocket
-        sprocket.append_path path
-        
-        # Find the asset and yield the context and output
-        asset = sprocket["machined.css"]
-        yield asset.send(:blank_context), asset.to_s
+        env.context_class.new env, logical_path, pathname
       end
     end
     
