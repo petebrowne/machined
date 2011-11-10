@@ -146,9 +146,9 @@ module Machined
       # Search for Rails Engines with assets and append those
       if defined?(Rails) && defined?(Rails::Engine)
         Rails::Engine.subclasses.each do |engine|
-          append_paths assets, engine.paths["vendor/assets"].existent_directories
-          append_paths assets, engine.paths["lib/assets"].existent_directories
           append_paths assets, engine.paths["app/assets"].existent_directories
+          append_paths assets, engine.paths["lib/assets"].existent_directories
+          append_paths assets, engine.paths["vendor/assets"].existent_directories
         end
       end
       
