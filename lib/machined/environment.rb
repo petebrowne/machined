@@ -143,6 +143,15 @@ module Machined
         append_paths assets, Utils.existent_directories(root.join(asset_path))
       end
       
+      # Search for Rails Engines with assets and append those
+      if defined?(Rails) && defined?(Rails::Engine)
+        Rails::Engine.subclasses.each do |engine|
+          append_paths assets, engine.paths["vendor/assets"].existent_directories
+          append_paths assets, engine.paths["lib/assets"].existent_directories
+          append_paths assets, engine.paths["app/assets"].existent_directories
+        end
+      end
+      
       # Set the URLs for the compilable default sprockets.
       assets.config.url = config.assets_url
       pages.config.url  = config.pages_url
@@ -158,7 +167,7 @@ module Machined
       assets.js_compressor  = js_compressor  if config.compress_js
       assets.css_compressor = css_compressor if config.compress_css
       
-      # Finally, configure Sprockets::Helpers
+      # Finally, configure Sprockets::Helpers to
       # match curernt configuration.
       Sprockets::Helpers.configure do |helpers|
         helpers.environment = assets

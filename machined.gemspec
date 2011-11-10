@@ -36,5 +36,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency "erubis"
   s.add_development_dependency "rdiscount"
   s.add_development_dependency "uglifier"
+  s.add_development_dependency "railties"
+  s.add_development_dependency "jquery-rails"
   s.add_development_dependency "rake"
 end

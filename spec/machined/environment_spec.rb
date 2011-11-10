@@ -121,6 +121,12 @@ describe Machined::Environment do
       end
     end
     
+    it "appends Rails::Engine paths" do
+      require "rails"
+      require "jquery-rails"
+      machined.assets.paths.first.should =~ %r(/jquery-rails-[\d\.]+/vendor/assets/javascripts)
+    end
+    
     it "compiles web assets" do
       within_construct do |c|
         c.file "assets/javascripts/main.js",       "//= require dep"

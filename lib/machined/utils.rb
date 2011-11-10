@@ -12,7 +12,7 @@ module Machined
         Tilt.mappings.each_key do |ext|
           begin
             templates[Sprockets::Utils.normalize_extension(ext)] = Tilt[ext]
-          rescue LoadError
+          rescue LoadError, NameError
             # safely ignore...
           end
         end
