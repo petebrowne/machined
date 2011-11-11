@@ -1,4 +1,7 @@
 #!/usr/bin/env ruby
 
+ENV["BUNDLE_GEMFILE"] ||= File.join(Dir.pwd, "Gemfile")
+require "bundler/setup" if File.exist? ENV["BUNDLE_GEMFILE"]
+
 require "machined"
 Machined::CLI.start
