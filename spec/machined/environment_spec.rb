@@ -125,6 +125,7 @@ describe Machined::Environment do
       require "rails"
       require "jquery-rails"
       machined.assets.paths.first.should =~ %r(/jquery-rails-[\d\.]+/vendor/assets/javascripts)
+      Rails::Engine.subclasses.delete Jquery::Rails::Engine
     end
     
     it "compiles web assets" do

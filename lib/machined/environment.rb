@@ -6,6 +6,8 @@ require "tilt"
 
 module Machined
   class Environment
+    include Initializable
+    
     # Default options for a Machined environment.
     DEFAULT_OPTIONS = {
       # Global configuration
@@ -13,6 +15,7 @@ module Machined
       :config_path    => "machined.rb",
       :output_path    => "public",
       :environment    => "development",
+      :skip_bundle    => false,
       :digest_assets  => false,
       :gzip_assets    => false,
       :layout         => "main",
@@ -96,55 +99,84 @@ module Machined
     def initialize(options = {})
       @config          = OpenStruct.new DEFAULT_OPTIONS.dup.merge(options)
       @root            = Pathname.new(config.root).expand_path
+      @output_path     = root.join config.output_path
       @sprockets       = []
       @context_helpers = []
       
-      # Create and append the default `assets` sprocket.
-      # This sprocket mimics the asset pipeline in Rails 3.1.
-      append_sprocket :assets, :assets => true
+      run_initializers self
+    end
+    
+    # If bundler is used, require all the gems in the Gemfile
+    # for this environment.
+    initializer :require_bundle do
+      next if config.skip_bundle
       
-      # Create and append the default `pages` sprocket.
-      # This sprocket is responsible for processing HTML pages,
-      # and includes processors for wrapping pages in layouts and
-      # reading YAML front matter.
+      ENV["BUNDLE_GEMFILE"] ||= root.join("Gemfile").to_s
+      if File.exist? ENV["BUNDLE_GEMFILE"]
+        require "bundler"
+        Bundler.require :default, config.environment.to_sym
+      end
+    end
+    
+    # Create and append the default `assets` sprocket.
+    # This sprocket mimics the asset pipeline in Rails 3.1.
+    initializer :create_assets_sprocket do
+      append_sprocket :assets, :assets => true
+    end
+    
+    # Create and append the default `pages` sprocket.
+    # This sprocket is responsible for processing HTML pages,
+    # and includes processors for wrapping pages in layouts and
+    # reading YAML front matter.
+    initializer :create_pages_sprocket do
       append_sprocket :pages do |pages|
         pages.register_mime_type     "text/html", ".html"
         pages.register_preprocessor  "text/html", Processors::FrontMatterProcessor
         pages.register_postprocessor "text/html", Processors::LayoutProcessor
       end
-      
-      # Create and append the default `views` sprocket.
-      # The files in this sprocket are not compiled. They are
-      # meant to be resources for the other sprockets. For instance,
-      # the layouts for the `pages` sprocket will be located here.
+    end
+    
+    # Create and append the default `views` sprocket.
+    # The files in this sprocket are not compiled. They are
+    # meant to be resources for the other sprockets. For instance,
+    # the layouts for the `pages` sprocket will be located here.
+    initializer :create_views_sprocket do
       append_sprocket :views, :compile => false do |views|
         views.register_mime_type "text/html", ".html"
       end
-      
-      # If there's a config file, execute with the scope of the
-      # newly created Machined environment. The default sprockets are
-      # available at this point, but not fully configured. This is so
-      # you can actually configure the sprockets with this file.
-      config_file = root.join(config.config_path)
+    end
+    
+    # If there's a config file, execute with the scope of the
+    # newly created Machined environment. The default sprockets are
+    # available at this point, but not fully configured. This is so
+    # you can actually configure the sprockets with this file.
+    initializer :eval_config_file do
+      config_file = root.join config.config_path
       instance_eval config_file.read if config_file.exist?
       
-      # Handle anymore configuration related setup.
-      @output_path = root.join(config.output_path)
-      
-      # Append the paths for each sprocket. The default `assets` sprocket
-      # is special, because we actually append the directories within
-      # the given paths (like the Rails 3.1 asset pipeline).
-      append_path  pages, config.pages_path
-      append_paths pages, config.pages_paths
-      append_path  views, config.views_path
-      append_paths views, config.views_paths
+      # This could be changed in the config file
+      @output_path = root.join config.output_path
+    end
+    
+    # Register all available Tilt templates to every
+    # sprocket other than the assets sprocket
+    initializer :register_all_templates do
+      sprockets.each do |sprocket|
+        sprocket.use_all_templates unless sprocket.config.assets
+      end
+    end
+    
+    # Do any configuration to the assets sprockets necessary
+    # after the config file has been evaled.
+    initializer :configure_assets_sprocket do
+      # Append the directories within the configured paths
       append_paths assets, Utils.existent_directories(root.join(config.assets_path))
       config.assets_paths.each do |asset_path|
         append_paths assets, Utils.existent_directories(root.join(asset_path))
       end
       
       # Search for Rails Engines with assets and append those
-      if defined?(Rails) && defined?(Rails::Engine)
+      if defined? Rails::Engine
         Rails::Engine.subclasses.each do |engine|
           append_paths assets, engine.paths["app/assets"].existent_directories
           append_paths assets, engine.paths["lib/assets"].existent_directories
@@ -152,11 +184,32 @@ module Machined
         end
       end
       
-      # Set the URLs for the compilable default sprockets.
+      # Setup the base URL for the assets (like the Rails asset_prefix)
       assets.config.url = config.assets_url
-      pages.config.url  = config.pages_url
+    end
+    
+    # Do any configuration to the pages sprockets necessary
+    # after the config file has been evaled.
+    initializer :configure_pages_sprocket do
+      # Append the configured pages paths
+      append_path  pages, config.pages_path
+      append_paths pages, config.pages_paths
       
-      # Now setup assets compression.
+      # Setup the base URL for the pages
+      pages.config.url = config.pages_url
+    end
+    
+    # Do any configuration to the views sprockets necessary
+    # after the config file has been evaled.
+    initializer :configure_views_sprocket do
+      # Append the configured views paths
+      append_path  views, config.views_path
+      append_paths views, config.views_paths
+    end
+    
+    # Setup the JavaScript and CSS compressors
+    # for the assets based on the configuration.
+    initializer :configure_assets_compression do
       if config.compress
         config.compress_js  = true
         config.compress_css = true
@@ -166,9 +219,11 @@ module Machined
       end
       assets.js_compressor  = js_compressor  if config.compress_js
       assets.css_compressor = css_compressor if config.compress_css
-      
-      # Finally, configure Sprockets::Helpers to
-      # match curernt configuration.
+    end
+    
+    # Finally, configure Sprockets::Helpers to
+    # match curernt configuration.
+    initializer :configure_sprockets_helpers do
       Sprockets::Helpers.configure do |helpers|
         helpers.environment = assets
         helpers.digest      = config.digest_assets

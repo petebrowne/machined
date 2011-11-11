@@ -1,10 +1,11 @@
 require "pathname"
+require "active_support/core_ext/hash/reverse_merge"
 
 module Machined
   module SpecHelpers
     # Convenience method for creating a new Machined environment
     def machined(config = {})
-      @machined ||= Machined::Environment.new(config)
+      @machined ||= Machined::Environment.new(config.reverse_merge(:skip_bundle => true))
     end
     
     # Convenience method for creating a new Machined sprocket,
