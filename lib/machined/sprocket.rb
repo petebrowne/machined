@@ -41,6 +41,11 @@ module Machined
       config.compile && config.url
     end
     
+    # Override to use Machined's Index
+    def index
+      Index.new(self)
+    end
+    
     # Loops through the available Tilt templates
     # and registers them as processor engines for
     # Sprockets. By default, Sprockets cherry picks

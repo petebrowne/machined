@@ -18,11 +18,11 @@ Gem::Specification.new do |s|
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
 
-  s.add_dependency             "sprockets",         "~> 2.0.3"
+  s.add_dependency             "sprockets",         "~> 2.1.0"
   s.add_dependency             "sprockets-helpers", "~> 0.2.1"
   s.add_dependency             "sprockets-sass",    "~> 0.4.1"
   s.add_dependency             "padrino-helpers",   "~> 0.10.5"
-  s.add_dependency             "activesupport",     "~> 3.1.1"
+  s.add_dependency             "activesupport",     "~> 3.1.2"
   s.add_dependency             "i18n",              "~> 0.6.0"
   s.add_dependency             "thor",              "~> 0.14.6"
   s.add_dependency             "crush",             "~> 0.3.3"
@@ -30,7 +30,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency "rack-test",         "~> 0.6.1"
   s.add_development_dependency "test-construct",    "~> 1.2.0"
   s.add_development_dependency "unindent",          "~> 1.0"
-  s.add_development_dependency "railties",          "~> 3.1.1"
+  s.add_development_dependency "railties",          "~> 3.1.2"
   s.add_development_dependency "haml"
   s.add_development_dependency "sass"
   s.add_development_dependency "slim"

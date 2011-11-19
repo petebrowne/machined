@@ -25,13 +25,13 @@ describe Machined::Helpers::PageHelpers do
         dep = c.file "pages/about.html", "---\ntitle: Hello World\n---\n"
         
         asset = machined.pages["index.html"]
-        asset.should be_fresh
+        asset.fresh?(machined.pages).should be_true
         
         dep.open("w") { |f| f.write("---\ntitle: This Changed!\n---\n") }
         mtime = Time.now + 600
         dep.utime mtime, mtime
         
-        asset.should be_stale
+        asset.fresh?(machined.pages).should be_false
       end
     end
   end

@@ -4,6 +4,7 @@ module Machined
   autoload :CLI,                    "machined/cli"
   autoload :Context,                "machined/context"
   autoload :Environment,            "machined/environment"
+  autoload :Index,                  "machined/index"
   autoload :Initializable,          "machined/initializable"
   autoload :Server,                 "machined/server"
   autoload :Sprocket,               "machined/sprocket"

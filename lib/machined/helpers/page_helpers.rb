@@ -14,7 +14,8 @@ module Machined
             self
           else
             depend_on_asset pathname
-            environment.find_asset(pathname).send :dependency_context
+            logical_path = environment.attributes_for(pathname).logical_path
+            context = environment.context_class.new environment, logical_path, pathname
           end
         end
       end
