@@ -3,23 +3,6 @@ require "active_support/core_ext/string/inflections"
 module Machined
   module Helpers
     module PageHelpers
-      # Returns the context of the given path. This is useful
-      # if you want to get the information from the front matter
-      # of a specific page.
-      def context_for(path, environment = self.environment)
-        pathname = environment.resolve path, :base_path => self.pathname.dirname
-        
-        contexts_cache[pathname] ||= begin
-          if pathname == self.pathname
-            self
-          else
-            depend_on_asset pathname
-            logical_path = environment.attributes_for(pathname).logical_path
-            context = environment.context_class.new environment, logical_path, pathname
-          end
-        end
-      end
-      
       # Returns the default layout, unless overridden by
       # the YAML front matter.
       def layout

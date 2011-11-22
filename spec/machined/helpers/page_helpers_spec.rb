@@ -1,41 +1,6 @@
 require "spec_helper"
 
 describe Machined::Helpers::PageHelpers do
-  describe "#context_for" do
-    it "returns the context for the given path" do
-      within_construct do |c|
-        c.file "pages/index.html.erb", "<%= context_for('about').title %>"
-        c.file "pages/about.html", "---\ntitle: Hello World\n---\n"
-        
-        machined.pages["index.html"].to_s.should == "Hello World"
-      end
-    end
-    
-    it "returns a self reference to avoid circular dependencies" do
-      within_construct do |c|
-        c.file "pages/index.html.erb", "<%= context_for('index') == self %>"
-        
-        machined.pages["index.html"].to_s.should == "true"
-      end
-    end
-    
-    it "adds the found context as a dependency" do
-      within_construct do |c|
-        c.file "pages/index.html.erb", "<%= context_for('about').title %>"
-        dep = c.file "pages/about.html", "---\ntitle: Hello World\n---\n"
-        
-        asset = machined.pages["index.html"]
-        asset.fresh?(machined.pages).should be_true
-        
-        dep.open("w") { |f| f.write("---\ntitle: This Changed!\n---\n") }
-        mtime = Time.now + 600
-        dep.utime mtime, mtime
-        
-        asset.fresh?(machined.pages).should be_false
-      end
-    end
-  end
-  
   describe "#layout" do
     it "defaults to the default layout" do
       within_construct do |c|
