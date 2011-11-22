@@ -29,7 +29,6 @@ module Machined
       super config.root
       
       @context_class = Class.new Context
-      use_all_templates unless config.assets
     end
     
     # Returns true, if this sprocket should be
