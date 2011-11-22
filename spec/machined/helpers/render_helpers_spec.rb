@@ -86,13 +86,13 @@ describe Machined::Helpers::RenderHelpers do
         dep = c.file "views/partial.haml", "Hello World"
         
         asset = machined.pages["index.html"]
-        asset.fresh?(machined.pages).should be_true
+        asset.should be_fresh(machined.pages)
           
         dep.open("w") { |f| f.write("%h1 Hello World") }
         mtime = Time.now + 600
         dep.utime mtime, mtime
         
-        asset.fresh?(machined.pages).should be_false
+        asset.should_not be_fresh(machined.pages)
       end
     end
     

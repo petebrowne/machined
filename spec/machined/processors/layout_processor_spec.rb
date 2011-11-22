@@ -36,13 +36,13 @@ describe Machined::Processors::LayoutProcessor do
       dep = c.file "views/layouts/main.html.haml", "= yield"
       
       asset = machined.pages["index.html"]
-      asset.fresh?(machined.pages).should be_true
-        
+      asset.should be_fresh(machined.pages)
+      
       dep.open("w") { |f| f.write("#layout= yield") }
       mtime = Time.now + 600
       dep.utime mtime, mtime
       
-      asset.fresh?(machined.pages).should be_false
+      asset.should_not be_fresh(machined.pages)
     end
   end
 end
