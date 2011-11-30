@@ -20,7 +20,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency             "sprockets",         "~> 2.0.0"
   s.add_dependency             "sprockets-helpers", "~> 0.2.1"
-  s.add_dependency             "sprockets-sass",    "~> 0.4.1"
+  s.add_dependency             "sprockets-sass",    "~> 0.5.0"
   s.add_dependency             "padrino-helpers",   "~> 0.10.5"
   s.add_dependency             "activesupport",     "~> 3.1.3"
   s.add_dependency             "i18n",              "~> 0.6.0"
