@@ -18,15 +18,17 @@ module Machined
       :skip_bundle    => false,
       :digest_assets  => false,
       :gzip_assets    => false,
-      :layout         => "main",
+      :layout         => "application",
       
       # Sprocket paths and URLs
       :assets_path    => "assets",
-      :assets_paths   => %w(lib/assets vendor/assets),
+      :assets_paths   => %w(app/assets lib/assets vendor/assets),
       :assets_url     => "/assets",
       :pages_path     => "pages",
+      :pages_paths    => %w(app/pages),
       :pages_url      => "/",
       :views_path     => "views",
+      :views_paths    => %w(app/views),
       
       # Compression configuration
       :compress       => false,
