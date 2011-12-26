@@ -13,10 +13,10 @@ describe Machined::Helpers::PageHelpers do
     
     it "returns the layout set in the front matter" do
       within_construct do |c|
-        c.file "pages/index.html.erb", "---\nlayout: application\n---\n<%= layout %>"
+        c.file "pages/index.html.erb", "---\nlayout: main\n---\n<%= layout %>"
         c.file "pages/about.html.erb", "---\nlayout: false\n---\n<%= layout %>"
         
-        machined.pages["index.html"].to_s.should == "application"
+        machined.pages["index.html"].to_s.should == "main"
         machined.pages["about.html"].to_s.should == "false"
       end
     end
