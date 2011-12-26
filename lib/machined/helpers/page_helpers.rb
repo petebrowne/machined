@@ -28,13 +28,6 @@ module Machined
       def url
         File.join(environment.config.url, @logical_path).sub /(index)?\.html$/, ''
       end
-      
-      protected
-      
-      # Returns a hash where we store found contexts.
-      def contexts_cache # :nodoc:
-        @contexts_cache ||= {}
-      end
     end
   end
 end
