@@ -51,14 +51,14 @@ describe Machined::CLI do
     it 'creates a default layout' do
       within_construct do |c|
         machined_cli "new my_site"
-        File.read("my_site/views/layouts/main.html.erb").should == <<-CONTENT.unindent
+        File.read("my_site/views/layouts/application.html.erb").should == <<-CONTENT.unindent
           <!doctype html>
           <html>
             <head lang="en">
               <meta charset="utf-8">
               <title><%= title %></title>
-              <%= stylesheet_link_tag "main" %>
-              <%= javascript_include_tag "main" %>
+              <%= stylesheet_link_tag "application" %>
+              <%= javascript_include_tag "application" %>
             </head>
             <body>
               <%= yield %>
@@ -71,14 +71,14 @@ describe Machined::CLI do
     it "creates a default javascript file" do
       within_construct do |c|
         machined_cli "new my_site"
-        File.exist?("my_site/assets/javascripts/main.js.coffee").should be_true
+        File.exist?("my_site/assets/javascripts/application.js.coffee").should be_true
       end
     end
     
     it "creates a default stylesheet file" do
       within_construct do |c|
         machined_cli "new my_site"
-        File.exist?("my_site/assets/stylesheets/main.css.scss").should be_true
+        File.exist?("my_site/assets/stylesheets/application.css.scss").should be_true
       end
     end
     

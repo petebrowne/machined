@@ -63,7 +63,7 @@ describe Machined::Helpers::RenderHelpers do
     it "does not wrap the partial in a layout" do
       within_construct do |c|
         c.file "pages/index.html.erb", %(<%= render "partial" %>)
-        c.file "views/layouts/main.html.erb", "<h1><%= yield %></h1>"
+        c.file "views/layouts/application.html.erb", "<h1><%= yield %></h1>"
         c.file "views/partial.html.erb", "Hello World"
         
         machined.pages["index.html"].to_s.should == "<h1>Hello World</h1>"
