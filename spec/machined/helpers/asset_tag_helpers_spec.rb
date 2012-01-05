@@ -65,4 +65,14 @@ describe Machined::Helpers::AssetTagHelpers do
       end
     end
   end
+  
+  describe "#asset_path" do
+    it "is compatible with the Sprockets::Helpers API" do
+      within_construct do |c|
+        c.file "assets/images/logo.jpg"
+        
+        context.image_path("logo.jpg", :digest => true).should =~ %r(/assets/logo-[0-9a-f]+.jpg)
+      end
+    end
+  end
 end
