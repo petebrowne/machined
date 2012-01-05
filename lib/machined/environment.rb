@@ -16,6 +16,7 @@ module Machined
       :output_path    => "public",
       :environment    => "development",
       :skip_bundle    => false,
+      :assets_only    => false,
       :digest_assets  => false,
       :gzip_assets    => false,
       :layout         => "application",
