@@ -128,6 +128,27 @@ describe Machined::Environment do
       Rails::Engine.subclasses.delete Jquery::Rails::Engine
     end
     
+    it "appends Sprockets::Plugin paths" do
+      require "sprockets-plugin"
+      
+      within_construct do |c|
+        plugin_dir = c.directory "plugin/assets"
+        plugin_dir.directory "images"
+        plugin_dir.directory "javascripts"
+        plugin_dir.directory "stylesheets"
+        
+        plugin = Class.new(Sprockets::Plugin)
+        plugin.append_paths_in plugin_dir
+        
+        machined.assets.paths.should match_paths(%w(
+          plugin/assets/images
+          plugin/assets/javascripts
+          plugin/assets/stylesheets
+        )).with_root(c)
+        Sprockets::Plugin.plugins.delete plugin
+      end
+    end
+    
     it "compiles web assets" do
       within_construct do |c|
         c.file "assets/javascripts/main.js",       "//= require dep"

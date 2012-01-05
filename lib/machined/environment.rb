@@ -177,6 +177,11 @@ module Machined
         append_paths assets, Utils.existent_directories(root.join(asset_path))
       end
       
+      begin
+        require "sprockets-plugin"
+        assets.append_plugin_paths
+      rescue LoadError; end
+      
       # Search for Rails Engines with assets and append those
       if defined? Rails::Engine
         Rails::Engine.subclasses.each do |engine|
@@ -317,7 +322,8 @@ module Machined
     def create_sprocket(name, options = {}, &block) # :nodoc:
       options.reverse_merge! :root => root
       Sprocket.new(self, options).tap do |sprocket|
-        define_singleton_method(name) { sprocket }
+        define_singleton_method(name) { instance_variable_get("@#{name}") }
+        instance_variable_set "@#{name}", sprocket
         yield sprocket if block_given?
       end
     end
@@ -327,7 +333,7 @@ module Machined
     # or an absolute path pointing somewhere else. It also
     # checks if it exists before appending it.
     def append_path(sprocket, path) # :nodoc:
-      path = root.join(path)
+      path = Pathname.new(path).expand_path(root)
       sprocket.append_path(path) if path.exist?
     end
     
