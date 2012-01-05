@@ -171,6 +171,8 @@ module Machined
     # Do any configuration to the assets sprockets necessary
     # after the config file has been evaled.
     initializer :configure_assets_sprocket do
+      next unless assets
+      
       # Append the directories within the configured paths
       append_paths assets, Utils.existent_directories(root.join(config.assets_path))
       config.assets_paths.each do |asset_path|
@@ -198,6 +200,8 @@ module Machined
     # Do any configuration to the pages sprockets necessary
     # after the config file has been evaled.
     initializer :configure_pages_sprocket do
+      next unless pages
+      
       # Append the configured pages paths
       append_path  pages, config.pages_path
       append_paths pages, config.pages_paths
@@ -209,6 +213,8 @@ module Machined
     # Do any configuration to the views sprockets necessary
     # after the config file has been evaled.
     initializer :configure_views_sprocket do
+      next unless views
+      
       # Append the configured views paths
       append_path  views, config.views_path
       append_paths views, config.views_paths
@@ -217,6 +223,8 @@ module Machined
     # Setup the JavaScript and CSS compressors
     # for the assets based on the configuration.
     initializer :configure_assets_compression do
+      next unless assets
+      
       if config.compress
         config.compress_js  = true
         config.compress_css = true
@@ -231,6 +239,8 @@ module Machined
     # Finally, configure Sprockets::Helpers to
     # match curernt configuration.
     initializer :configure_sprockets_helpers do
+      next unless assets
+      
       Sprockets::Helpers.configure do |helpers|
         helpers.environment = assets
         helpers.digest      = config.digest_assets
