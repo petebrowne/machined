@@ -291,6 +291,15 @@ module Machined
       end
     end
     
+    #
+    def remove_sprocket(name)
+      if sprocket = get_sprocket(name)
+        sprockets.delete sprocket
+        set_sprocket(name, nil)
+        server and server.remap
+      end
+    end
+    
     # Adds helpers that can be used within asset files.
     # There's two supported ways to add helpers, the first of
     # which is similar to how the `#helpers` DSL works in Sinatra:
@@ -327,13 +336,23 @@ module Machined
     
     protected
     
+    # Returns the sprocket registered with the given name.
+    def get_sprocket(name)
+      instance_variable_get "@#{name}"
+    end
+    
+    # Sets the sprocket with the give name.
+    def set_sprocket(name, sprocket)
+      instance_variable_set "@#{name}", sprocket
+    end
+    
     # Factory method for creating a `Machined::Sprocket` instance.
     # This is used in both `#append_sprocket` and `#prepend_sprocket`.
     def create_sprocket(name, options = {}, &block) # :nodoc:
       options.reverse_merge! :root => root
       Sprocket.new(self, options).tap do |sprocket|
-        define_singleton_method(name) { instance_variable_get("@#{name}") }
-        instance_variable_set "@#{name}", sprocket
+        define_singleton_method(name) { get_sprocket(name) }
+        set_sprocket(name, sprocket)
         yield sprocket if block_given?
       end
     end

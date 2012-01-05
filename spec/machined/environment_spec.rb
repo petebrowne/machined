@@ -62,6 +62,19 @@ describe Machined::Environment do
     end
   end
   
+  describe "#remove_sprocket" do
+    it "sets the accessor method to return nil" do
+      machined.remove_sprocket :pages
+      machined.pages.should be_nil
+    end
+    
+    it "removes the sprockets from the sprockets list" do
+      views = machined.views
+      machined.remove_sprocket :views
+      machined.sprockets.should_not include(views)
+    end
+  end
+  
   describe "#helpers" do
     it "adds methods defined in the given block to the Context" do
       machined.helpers do
