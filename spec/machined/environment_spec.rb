@@ -189,6 +189,27 @@ describe Machined::Environment do
         machined.pages["index.html"].to_s.should == "<h1>Hello World</h1>\n"
       end
     end
+    
+    context "when :assets_only is set in constructor" do
+      it "is never created" do
+        machined :assets_only => true
+        machined.respond_to?(:pages).should be_false
+        machined.sprockets.should == [ machined.assets, machined.views ]
+      end
+      
+    end
+    
+    context "when :assets_only is set in the config file" do
+      it "is removed" do
+        within_construct do |c|
+          c.file "machined.rb", "config.assets_only = true"
+          
+          machined
+          machined.pages.should be_nil
+          machined.sprockets.should == [ machined.assets, machined.views ]
+        end
+      end
+    end
   end
   
   describe "default views sprocket" do

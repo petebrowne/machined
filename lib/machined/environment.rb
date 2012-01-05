@@ -131,6 +131,8 @@ module Machined
     # and includes processors for wrapping pages in layouts and
     # reading YAML front matter.
     initializer :create_pages_sprocket do
+      next if config.assets_only
+      
       append_sprocket :pages do |pages|
         pages.register_mime_type     "text/html", ".html"
         pages.register_preprocessor  "text/html", Processors::FrontMatterProcessor
@@ -158,6 +160,7 @@ module Machined
       
       # This could be changed in the config file
       @output_path = root.join config.output_path
+      remove_sprocket(:pages) if config.assets_only && @pages
     end
     
     # Register all available Tilt templates to every
@@ -171,7 +174,7 @@ module Machined
     # Do any configuration to the assets sprockets necessary
     # after the config file has been evaled.
     initializer :configure_assets_sprocket do
-      next unless assets
+      next unless @assets
       
       # Append the directories within the configured paths
       append_paths assets, Utils.existent_directories(root.join(config.assets_path))
@@ -179,10 +182,8 @@ module Machined
         append_paths assets, Utils.existent_directories(root.join(asset_path))
       end
       
-      begin
-        require "sprockets-plugin"
-        assets.append_plugin_paths
-      rescue LoadError; end
+      # Append paths from Sprockets-plugin
+      assets.append_plugin_paths if assets.respond_to?(:append_plugin_paths)
       
       # Search for Rails Engines with assets and append those
       if defined? Rails::Engine
@@ -200,7 +201,7 @@ module Machined
     # Do any configuration to the pages sprockets necessary
     # after the config file has been evaled.
     initializer :configure_pages_sprocket do
-      next unless pages
+      next unless @pages
       
       # Append the configured pages paths
       append_path  pages, config.pages_path
@@ -213,7 +214,7 @@ module Machined
     # Do any configuration to the views sprockets necessary
     # after the config file has been evaled.
     initializer :configure_views_sprocket do
-      next unless views
+      next unless @views
       
       # Append the configured views paths
       append_path  views, config.views_path
@@ -223,7 +224,7 @@ module Machined
     # Setup the JavaScript and CSS compressors
     # for the assets based on the configuration.
     initializer :configure_assets_compression do
-      next unless assets
+      next unless @assets
       
       if config.compress
         config.compress_js  = true
@@ -239,7 +240,7 @@ module Machined
     # Finally, configure Sprockets::Helpers to
     # match curernt configuration.
     initializer :configure_sprockets_helpers do
-      next unless assets
+      next unless @assets
       
       Sprockets::Helpers.configure do |helpers|
         helpers.environment = assets
@@ -291,7 +292,8 @@ module Machined
       end
     end
     
-    #
+    # Removes the sprocket with the given name. This is useful if
+    # you don't need one of the default Sprockets.
     def remove_sprocket(name)
       if sprocket = get_sprocket(name)
         sprockets.delete sprocket
