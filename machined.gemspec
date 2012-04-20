@@ -31,13 +31,11 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'test-construct',    '~> 1.2.0'
   s.add_development_dependency 'unindent',          '~> 1.0'
   s.add_development_dependency 'sprockets-plugin',  '~> 0.2.1'
-  # s.add_development_dependency 'railties',          '~> 3.1.3'
   s.add_development_dependency 'haml'
   s.add_development_dependency 'sass'
   s.add_development_dependency 'slim'
   s.add_development_dependency 'erubis'
   s.add_development_dependency 'rdiscount'
   s.add_development_dependency 'uglifier'
-  # s.add_development_dependency 'jquery-rails'
   s.add_development_dependency 'rake'
 end
