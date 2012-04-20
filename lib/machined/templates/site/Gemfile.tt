@@ -1,10 +1,10 @@
 source :rubygems
 
-gem "machined", "<%= Machined::VERSION %>"
+gem 'machined', '<%= Machined::VERSION %>'
 
-gem "sass", "~> 3.1"
-gem "coffee-script", "~> 2.2"
+gem 'sass', '~> 3.1'
+gem 'coffee-script', '~> 2.2'
 
 group :production do
-  gem "uglifier", "~> 1.0"
+  gem 'uglifier', '~> 1.0'
 end

@@ -6,11 +6,11 @@ module Machined
       def asset_path(source, options = {})
         case source
         when :css
-          path_to_asset options, :dir => "stylesheets", :ext => "css"
+          path_to_asset options, :dir => 'stylesheets', :ext => 'css'
         when :images
-          path_to_asset options, :dir => "images"
+          path_to_asset options, :dir => 'images'
         when :js
-          path_to_asset options, :dir => "javascripts", :ext => "js"
+          path_to_asset options, :dir => 'javascripts', :ext => 'js'
         else
           path_to_asset source, options
         end
@@ -18,7 +18,7 @@ module Machined
       
       # Redefine image_path to work with Sprockets::Helpers.
       def image_path(source, options = {})
-        asset_path source, { :dir => "images" }.merge(options)
+        asset_path source, { :dir => 'images' }.merge(options)
       end
     end
   end

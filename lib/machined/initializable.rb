@@ -1,4 +1,4 @@
-require "active_support/concern"
+require 'active_support/concern'
 
 module Machined
   # Initializable is a minimal version of
@@ -9,7 +9,7 @@ module Machined
   #
   # If they move Rails::Initializable into ActiveSupport
   # I'll remove this module and use theirs. Right now,
-  # I don't want to `require "rails"` if I don't have to.
+  # I don't want to `require 'rails'` if I don't have to.
   module Initializable
     extend ActiveSupport::Concern
     

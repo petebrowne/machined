@@ -1,19 +1,19 @@
-require "spec_helper"
+require 'spec_helper'
 
 describe Machined::Helpers::RenderHelpers do
-  describe "#render" do
-    it "renders partials" do
+  describe '#render' do
+    it 'renders partials' do
       within_construct do |c|
-        c.file "pages/index.html.erb", <<-CONTENT.unindent
-          <%= render "partial1" %>
-          <%= render "partial2" %>
-          <%= render "partials/partial3" %>
+        c.file 'pages/index.html.erb', <<-CONTENT.unindent
+          <%= render 'partial1' %>
+          <%= render 'partial2' %>
+          <%= render 'partials/partial3' %>
         CONTENT
-        c.file "views/partial1.md", "# Hello World"
-        c.file "views/_partial2.haml", "%p Here's some Content..."
-        c.file "views/partials/_partial3.html", "<p>And some more</p>\n"
+        c.file 'views/partial1.md', '# Hello World'
+        c.file 'views/_partial2.haml', "%p Here's some Content..."
+        c.file 'views/partials/_partial3.html', "<p>And some more</p>\n"
         
-        machined.pages["index.html"].to_s.should == <<-CONTENT.unindent
+        machined.pages['index.html'].to_s.should == <<-CONTENT.unindent
           <h1>Hello World</h1>
           <p>Here's some Content...</p>
           <p>And some more</p>
@@ -21,28 +21,28 @@ describe Machined::Helpers::RenderHelpers do
       end
     end
     
-    it "renders partials with locals" do
+    it 'renders partials with locals' do
       within_construct do |c|
-        c.file "pages/index.html.erb", %(<%= render "partial", :text => "Hello World" %>)
-        c.file "views/partial.haml", "%h1= text"
+        c.file 'pages/index.html.erb', %(<%= render 'partial', :text => 'Hello World' %>)
+        c.file 'views/partial.haml', '%h1= text'
         
-        machined.pages["index.html"].to_s.should == "<h1>Hello World</h1>\n"
+        machined.pages['index.html'].to_s.should == "<h1>Hello World</h1>\n"
       end
     end
     
-    it "returns the original locals state once rendered" do
+    it 'returns the original locals state once rendered' do
       within_construct do |c|
-        c.file "pages/index.html.erb", <<-CONTENT.unindent
+        c.file 'pages/index.html.erb', <<-CONTENT.unindent
           ---
           title: Hello World
           ---
-          <%= render "partial", :title => "Title...", :text => "Text..." %>
+          <%= render 'partial', :title => 'Title...', :text => 'Text...' %>
           title: <%= title %>
           text: <%= respond_to?(:text) %>
         CONTENT
-        c.file "views/partial.html.erb", "title: <%= title %>\ntext: <%= text %>\n"
+        c.file 'views/partial.html.erb', "title: <%= title %>\ntext: <%= text %>\n"
         
-        machined.pages["index.html"].to_s.should == <<-CONTENT.unindent
+        machined.pages['index.html'].to_s.should == <<-CONTENT.unindent
           title: Title...
           text: Text...
           title: Hello World
@@ -51,44 +51,44 @@ describe Machined::Helpers::RenderHelpers do
       end
     end
     
-    it "renders partial collections" do
+    it 'renders partial collections' do
       within_construct do |c|
-        c.file "pages/index.html.erb", %(<%= render "number", :collection => [1,2,3] %>)
-        c.file "views/number.haml", "= number\n= number_counter"
+        c.file 'pages/index.html.erb', %(<%= render 'number', :collection => [1,2,3] %>)
+        c.file 'views/number.haml', "= number\n= number_counter"
         
-        machined.pages["index.html"].to_s.should == "1\n1\n2\n2\n3\n3\n"
+        machined.pages['index.html'].to_s.should == "1\n1\n2\n2\n3\n3\n"
       end
     end
     
-    it "does not wrap the partial in a layout" do
+    it 'does not wrap the partial in a layout' do
       within_construct do |c|
-        c.file "pages/index.html.erb", %(<%= render "partial" %>)
-        c.file "views/layouts/application.html.erb", "<h1><%= yield %></h1>"
-        c.file "views/partial.html.erb", "Hello World"
+        c.file 'pages/index.html.erb', %(<%= render 'partial' %>)
+        c.file 'views/layouts/application.html.erb', '<h1><%= yield %></h1>'
+        c.file 'views/partial.html.erb', 'Hello World'
         
-        machined.pages["index.html"].to_s.should == "<h1>Hello World</h1>"
+        machined.pages['index.html'].to_s.should == '<h1>Hello World</h1>'
       end
     end
     
-    it "optionally wraps the partial in a layout" do
+    it 'optionally wraps the partial in a layout' do
       within_construct do |c|
-        c.file "pages/index.html.erb", %(<%= render "partial", :layout => "partial" %>)
-        c.file "views/layouts/partial.html.erb", "<h1><%= yield %></h1>"
-        c.file "views/partial.html.erb", "Hello World"
+        c.file 'pages/index.html.erb', %(<%= render 'partial', :layout => 'partial' %>)
+        c.file 'views/layouts/partial.html.erb', '<h1><%= yield %></h1>'
+        c.file 'views/partial.html.erb', 'Hello World'
         
-        machined.pages["index.html"].to_s.should == "<h1>Hello World</h1>"
+        machined.pages['index.html'].to_s.should == '<h1>Hello World</h1>'
       end
     end
     
-    it "adds the partial as a dependency" do
+    it 'adds the partial as a dependency' do
       within_construct do |c|
-        c.file "pages/index.html.erb", %(<%= render "partial" %>)
-        dep = c.file "views/partial.haml", "Hello World"
+        c.file 'pages/index.html.erb', %(<%= render 'partial' %>)
+        dep = c.file 'views/partial.haml', 'Hello World'
         
-        asset = machined.pages["index.html"]
+        asset = machined.pages['index.html']
         asset.should be_fresh(machined.pages)
           
-        dep.open("w") { |f| f.write("%h1 Hello World") }
+        dep.open('w') { |f| f.write('%h1 Hello World') }
         mtime = Time.now + 600
         dep.utime mtime, mtime
         
@@ -96,12 +96,12 @@ describe Machined::Helpers::RenderHelpers do
       end
     end
     
-    it "raises a Sprockets::FileNotFound error if the partial is missing" do
+    it 'raises a Sprockets::FileNotFound error if the partial is missing' do
       within_construct do |c|
-        c.file "pages/index.html.erb", %(<%= render "partial" %>)
+        c.file 'pages/index.html.erb', %(<%= render 'partial' %>)
         
         expect {
-          machined.pages["index.html"].to_s
+          machined.pages['index.html'].to_s
         }.to raise_error(Sprockets::FileNotFound)
       end
     end

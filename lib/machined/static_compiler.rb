@@ -1,4 +1,4 @@
-require "fileutils"
+require 'fileutils'
 
 module Machined
   class StaticCompiler
@@ -32,7 +32,7 @@ module Machined
     
     # Determines if we should precompile the asset
     # with the given url. By default, we skip over any
-    # files that begin with "_", like partials.
+    # files that begin with '_', like partials.
     def compile?(url)
       File.basename(url) !~ /^_/
     end

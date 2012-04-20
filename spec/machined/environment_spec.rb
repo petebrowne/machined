@@ -1,37 +1,37 @@
-require "spec_helper"
+require 'spec_helper'
 
 describe Machined::Environment do
-  describe "#initialize" do
-    it "loads configuration from a config file" do
+  describe '#initialize' do
+    it 'loads configuration from a config file' do
       within_construct do |c|
-        c.file "machined.rb", <<-CONTENT.unindent
-          config.output_path = "site"
+        c.file 'machined.rb', <<-CONTENT.unindent
+          config.output_path = 'site'
           append_sprocket :updates
         CONTENT
-        machined.config.output_path.should == "site"
+        machined.config.output_path.should == 'site'
         machined.updates.should be_a(Machined::Sprocket)
       end
     end
   end
   
-  describe "#append_sprocket" do
-    it "creates a new Sprockets environment" do
+  describe '#append_sprocket' do
+    it 'creates a new Sprockets environment' do
       sprocket = machined.append_sprocket :updates
       sprocket.should be_a(Sprockets::Environment)
     end
     
-    it "appends the sprocket to #sprockets" do
+    it 'appends the sprocket to #sprockets' do
       sprocket = machined.append_sprocket :updates
       machined.sprockets.last.should be(sprocket)
     end
     
-    it "adds a method with the given name which returns the sprocket" do
+    it 'adds a method with the given name which returns the sprocket' do
       sprocket = machined.append_sprocket :updates
       machined.updates.should be(sprocket)
       Machined::Environment.method_defined?(:updates).should be_false
     end
     
-    it "yields the sprocket for configuration" do
+    it 'yields the sprocket for configuration' do
       yielded_sprocket = nil
       sprocket = machined.append_sprocket :updates do |updates|
         yielded_sprocket = updates
@@ -39,73 +39,73 @@ describe Machined::Environment do
       yielded_sprocket.should be(sprocket)
     end
     
-    it "initializes the sprocket with a reference to the Machined environment" do
+    it 'initializes the sprocket with a reference to the Machined environment' do
       sprocket = machined.append_sprocket :updates
       sprocket.machined.should be(machined)
     end
     
-    it "initializes the sprocket with configuration" do
-      sprocket = machined.append_sprocket :updates, :root => "spec/machined"
-      sprocket.root.should == File.expand_path("spec/machined")
+    it 'initializes the sprocket with configuration' do
+      sprocket = machined.append_sprocket :updates, :root => 'spec/machined'
+      sprocket.root.should == File.expand_path('spec/machined')
     end
   end
   
-  describe "#prepend_sprocket" do
-    it "creates a new Sprockets environment" do
+  describe '#prepend_sprocket' do
+    it 'creates a new Sprockets environment' do
       sprocket = machined.prepend_sprocket :updates
       sprocket.should be_a(Sprockets::Environment)
     end
     
-    it "prepends the sprocket to #sprockets" do
+    it 'prepends the sprocket to #sprockets' do
       sprocket = machined.prepend_sprocket :updates
       machined.sprockets.first.should be(sprocket)
     end
   end
   
-  describe "#remove_sprocket" do
-    it "sets the accessor method to return nil" do
+  describe '#remove_sprocket' do
+    it 'sets the accessor method to return nil' do
       machined.remove_sprocket :pages
       machined.pages.should be_nil
     end
     
-    it "removes the sprockets from the sprockets list" do
+    it 'removes the sprockets from the sprockets list' do
       views = machined.views
       machined.remove_sprocket :views
       machined.sprockets.should_not include(views)
     end
   end
   
-  describe "#helpers" do
-    it "adds methods defined in the given block to the Context" do
+  describe '#helpers' do
+    it 'adds methods defined in the given block to the Context' do
       machined.helpers do
         def hello
-          "world"
+          'world'
         end
       end
       
-      context.hello.should == "world"
+      context.hello.should == 'world'
     end
     
-    it "adds methods defined in the given module to the Context" do
+    it 'adds methods defined in the given module to the Context' do
       helper = Module.new do
         def hello
-          "world"
+          'world'
         end
       end
       machined.helpers helper
-      context.hello.should == "world"
+      context.hello.should == 'world'
     end
   end
   
-  describe "default assets sprocket" do
-    it "appends the standard asset paths" do
+  describe 'default assets sprocket' do
+    it 'appends the standard asset paths' do
       within_construct do |c|
-        c.directory "assets/images"
-        c.directory "assets/javascripts"
-        c.directory "assets/stylesheets"
-        c.directory "vendor/assets/images"
-        c.directory "vendor/assets/javascripts"
-        c.directory "vendor/assets/stylesheets"
+        c.directory 'assets/images'
+        c.directory 'assets/javascripts'
+        c.directory 'assets/stylesheets'
+        c.directory 'vendor/assets/images'
+        c.directory 'vendor/assets/javascripts'
+        c.directory 'vendor/assets/stylesheets'
         
         machined.assets.paths.should match_paths(%w(
           assets/images
@@ -118,12 +118,12 @@ describe Machined::Environment do
       end
     end
     
-    it "appends the available asset paths" do
+    it 'appends the available asset paths' do
       within_construct do |c|
-        c.directory "assets/css"
-        c.directory "assets/img"
-        c.directory "assets/js"
-        c.directory "assets/plugins"
+        c.directory 'assets/css'
+        c.directory 'assets/img'
+        c.directory 'assets/js'
+        c.directory 'assets/plugins'
         
         machined.assets.paths.should match_paths(%w(
           assets/css
@@ -134,21 +134,21 @@ describe Machined::Environment do
       end
     end
     
-    # it "appends Rails::Engine paths" do
-    #   require "rails"
-    #   require "jquery-rails"
+    # it 'appends Rails::Engine paths' do
+    #   require 'rails'
+    #   require 'jquery-rails'
     #   machined.assets.paths.first.should =~ %r(/jquery-rails-[\d\.]+/vendor/assets/javascripts)
     #   Rails::Engine.subclasses.delete Jquery::Rails::Engine
     # end
     
-    it "appends Sprockets::Plugin paths" do
-      require "sprockets-plugin"
+    it 'appends Sprockets::Plugin paths' do
+      require 'sprockets-plugin'
       
       within_construct do |c|
-        plugin_dir = c.directory "plugin/assets"
-        plugin_dir.directory "images"
-        plugin_dir.directory "javascripts"
-        plugin_dir.directory "stylesheets"
+        plugin_dir = c.directory 'plugin/assets'
+        plugin_dir.directory 'images'
+        plugin_dir.directory 'javascripts'
+        plugin_dir.directory 'stylesheets'
         
         plugin = Class.new(Sprockets::Plugin)
         plugin.append_paths_in plugin_dir
@@ -162,36 +162,36 @@ describe Machined::Environment do
       end
     end
     
-    it "compiles web assets" do
+    it 'compiles web assets' do
       within_construct do |c|
-        c.file "assets/javascripts/main.js",       "//= require dep"
-        c.file "assets/javascripts/dep.js",        "var app = {};"
-        c.file "assets/stylesheets/main.css.scss", "@import 'dep';\nbody { color: $color; }"
-        c.file "assets/stylesheets/_dep.scss",     "$color: red;"
+        c.file 'assets/javascripts/main.js',       '//= require dep'
+        c.file 'assets/javascripts/dep.js',        'var app = {};'
+        c.file 'assets/stylesheets/main.css.scss', "@import 'dep';\nbody { color: $color; }"
+        c.file 'assets/stylesheets/_dep.scss',     '$color: red;'
         
-        machined.assets["main.js"].to_s.should == "var app = {};\n"
-        machined.assets["main.css"].to_s.should == "body {\n  color: red; }\n"
+        machined.assets['main.js'].to_s.should == "var app = {};\n"
+        machined.assets['main.css'].to_s.should == "body {\n  color: red; }\n"
       end
     end
   end
   
-  describe "default pages sprocket" do
-    it "appends the pages path" do
+  describe 'default pages sprocket' do
+    it 'appends the pages path' do
       within_construct do |c|
-        c.directory "pages"
+        c.directory 'pages'
         machined.pages.paths.should match_paths(%w(pages)).with_root(c)
       end
     end
     
-    it "compiles html pages" do
+    it 'compiles html pages' do
       within_construct do |c|
-        c.file "pages/index.html.haml", "%h1 Hello World"
-        machined.pages["index.html"].to_s.should == "<h1>Hello World</h1>\n"
+        c.file 'pages/index.html.haml', '%h1 Hello World'
+        machined.pages['index.html'].to_s.should == "<h1>Hello World</h1>\n"
       end
     end
     
-    context "when :assets_only is set in constructor" do
-      it "is never created" do
+    context 'when :assets_only is set in constructor' do
+      it 'is never created' do
         machined :assets_only => true
         machined.respond_to?(:pages).should be_false
         machined.sprockets.should == [ machined.assets, machined.views ]
@@ -199,10 +199,10 @@ describe Machined::Environment do
       
     end
     
-    context "when :assets_only is set in the config file" do
-      it "is removed" do
+    context 'when :assets_only is set in the config file' do
+      it 'is removed' do
         within_construct do |c|
-          c.file "machined.rb", "config.assets_only = true"
+          c.file 'machined.rb', 'config.assets_only = true'
           
           machined
           machined.pages.should be_nil
@@ -212,49 +212,49 @@ describe Machined::Environment do
     end
   end
   
-  describe "default views sprocket" do
-    it "appends the views path" do
+  describe 'default views sprocket' do
+    it 'appends the views path' do
       within_construct do |c|
-        c.directory "views"
+        c.directory 'views'
         machined.views.paths.should match_paths(%w(views)).with_root(c)
       end
     end
     
-    it "compiles html pages" do
+    it 'compiles html pages' do
       within_construct do |c|
-        c.file "views/layouts/main.html.haml", "%h1 Hello World"
-        machined.views["layouts/main.html"].to_s.should == "<h1>Hello World</h1>\n"
+        c.file 'views/layouts/main.html.haml', '%h1 Hello World'
+        machined.views['layouts/main.html'].to_s.should == "<h1>Hello World</h1>\n"
       end
     end
   end
   
-  describe "compression" do
-    context "with compress set to true" do
-      it "compresses javascripts and stylesheets" do
+  describe 'compression' do
+    context 'with compress set to true' do
+      it 'compresses javascripts and stylesheets' do
         within_construct do |c|
-          c.file "assets/javascripts/main.js",       "//= require dep"
-          c.file "assets/javascripts/dep.js",        "var app = {};"
-          c.file "assets/stylesheets/main.css.scss", "@import 'dep';\nbody { color: $color; }"
-          c.file "assets/stylesheets/_dep.scss",     "$color: red;"
+          c.file 'assets/javascripts/main.js',       '//= require dep'
+          c.file 'assets/javascripts/dep.js',        'var app = {};'
+          c.file 'assets/stylesheets/main.css.scss', "@import 'dep';\nbody { color: $color; }"
+          c.file 'assets/stylesheets/_dep.scss',     '$color: red;'
           
-          Crush::Uglifier.should_receive(:compress).with("var app = {};\n").and_return("compressed")
-          Crush::Sass::Engine.should_receive(:compress).with("body {\n  color: red; }\n").and_return("compressed")
+          Crush::Uglifier.should_receive(:compress).with("var app = {};\n").and_return('compressed')
+          Crush::Sass::Engine.should_receive(:compress).with("body {\n  color: red; }\n").and_return('compressed')
           
           machined :compress => true
-          machined.assets["main.js"].to_s.should == "compressed"
-          machined.assets["main.css"].to_s.should == "compressed"
+          machined.assets['main.js'].to_s.should == 'compressed'
+          machined.assets['main.css'].to_s.should == 'compressed'
         end
       end
     end
   end
   
-  context "with a js_compressor set" do
-    it "compresses using that compressor" do
+  context 'with a js_compressor set' do
+    it 'compresses using that compressor' do
       within_construct do |c|
-        c.file "assets/javascripts/main.js", "var app = {};"
-        c.file "machined.rb", "config.js_compressor = :packr"
-        Crush::Packr.should_receive(:compress).with("var app = {};\n").and_return("compressed")
-        machined.assets["main.js"].to_s.should == "compressed"
+        c.file 'assets/javascripts/main.js', 'var app = {};'
+        c.file 'machined.rb', 'config.js_compressor = :packr'
+        Crush::Packr.should_receive(:compress).with("var app = {};\n").and_return('compressed')
+        machined.assets['main.js'].to_s.should == 'compressed'
       end
     end
   end

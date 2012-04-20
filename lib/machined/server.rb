@@ -1,4 +1,4 @@
-require "rack"
+require 'rack'
 
 module Machined
   class Server
@@ -18,7 +18,7 @@ module Machined
     # should handle the request and then...let it
     # handle it.
     def call(env)
-      refresh if machined.config.environment == "development"
+      refresh if machined.config.environment == 'development'
       response = @url_map.call(env)
       response = @files.call(env) if response.first == 404
       response

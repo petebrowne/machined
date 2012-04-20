@@ -1,2 +1,2 @@
-require "machined"
+require 'machined'
 run Machined::Environment.new

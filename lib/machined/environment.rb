@@ -1,8 +1,8 @@
-require "ostruct"
-require "pathname"
-require "active_support/core_ext/hash/reverse_merge"
-require "crush"
-require "tilt"
+require 'ostruct'
+require 'pathname'
+require 'active_support/core_ext/hash/reverse_merge'
+require 'crush'
+require 'tilt'
 
 module Machined
   class Environment
@@ -11,24 +11,24 @@ module Machined
     # Default options for a Machined environment.
     DEFAULT_OPTIONS = {
       # Global configuration
-      :root           => ".",
-      :config_path    => "machined.rb",
-      :output_path    => "public",
-      :environment    => "development",
+      :root           => '.',
+      :config_path    => 'machined.rb',
+      :output_path    => 'public',
+      :environment    => 'development',
       :skip_bundle    => false,
       :assets_only    => false,
       :digest_assets  => false,
       :gzip_assets    => false,
-      :layout         => "application",
+      :layout         => 'application',
       
       # Sprocket paths and URLs
-      :assets_path    => "assets",
+      :assets_path    => 'assets',
       :assets_paths   => %w(app/assets lib/assets vendor/assets),
-      :assets_url     => "/assets",
-      :pages_path     => "pages",
+      :assets_url     => '/assets',
+      :pages_path     => 'pages',
       :pages_paths    => %w(app/pages),
-      :pages_url      => "/",
-      :views_path     => "views",
+      :pages_url      => '/',
+      :views_path     => 'views',
       :views_paths    => %w(app/views),
       
       # Compression configuration
@@ -114,9 +114,9 @@ module Machined
     initializer :require_bundle do
       next if config.skip_bundle
       
-      ENV["BUNDLE_GEMFILE"] ||= root.join("Gemfile").to_s
-      if File.exist? ENV["BUNDLE_GEMFILE"]
-        require "bundler"
+      ENV['BUNDLE_GEMFILE'] ||= root.join('Gemfile').to_s
+      if File.exist? ENV['BUNDLE_GEMFILE']
+        require 'bundler'
         Bundler.require :default, config.environment.to_sym
       end
     end
@@ -135,9 +135,9 @@ module Machined
       next if config.assets_only
       
       append_sprocket :pages do |pages|
-        pages.register_mime_type     "text/html", ".html"
-        pages.register_preprocessor  "text/html", Processors::FrontMatterProcessor
-        pages.register_postprocessor "text/html", Processors::LayoutProcessor
+        pages.register_mime_type     'text/html', '.html'
+        pages.register_preprocessor  'text/html', Processors::FrontMatterProcessor
+        pages.register_postprocessor 'text/html', Processors::LayoutProcessor
       end
     end
     
@@ -147,7 +147,7 @@ module Machined
     # the layouts for the `pages` sprocket will be located here.
     initializer :create_views_sprocket do
       append_sprocket :views, :compile => false do |views|
-        views.register_mime_type "text/html", ".html"
+        views.register_mime_type 'text/html', '.html'
       end
     end
     
@@ -189,9 +189,9 @@ module Machined
       # Search for Rails Engines with assets and append those
       if defined? Rails::Engine
         Rails::Engine.subclasses.each do |engine|
-          append_paths assets, engine.paths["app/assets"].existent_directories
-          append_paths assets, engine.paths["lib/assets"].existent_directories
-          append_paths assets, engine.paths["vendor/assets"].existent_directories
+          append_paths assets, engine.paths['app/assets'].existent_directories
+          append_paths assets, engine.paths['lib/assets'].existent_directories
+          append_paths assets, engine.paths['vendor/assets'].existent_directories
         end
       end
       
@@ -269,13 +269,13 @@ module Machined
     # and appends it to the #sprockets list. This will also create
     # an accessor with the given name that references the created sprocket.
     #
-    #   machined.append_sprocket :updates, :url => "/news" do |updates|
-    #     updates.append_path "updates"
+    #   machined.append_sprocket :updates, :url => '/news' do |updates|
+    #     updates.append_path 'updates'
     #   end
     #   
     #   machined.updates            # => #<Machined::Sprocket...>
-    #   machined.updates.config.url # => "/news"
-    #   machined.updates.paths      # => [ ".../updates" ]
+    #   machined.updates.config.url # => '/news'
+    #   machined.updates.paths      # => [ '.../updates' ]
     #
     def append_sprocket(name, options = {}, &block)
       create_sprocket(name, options, &block).tap do |sprocket|
@@ -388,7 +388,7 @@ module Machined
         JS_COMPRESSORS[config.js_compressor.to_sym]
       else
         Crush.register_js
-        Tilt["js"]
+        Tilt['js']
       end
     end
     
@@ -403,7 +403,7 @@ module Machined
         CSS_COMPRESSORS[config.css_compressor.to_sym]
       else
         Crush.register_css
-        Tilt["css"]
+        Tilt['css']
       end
     end
   end

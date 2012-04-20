@@ -1,8 +1,8 @@
-require "tilt"
+require 'tilt'
 
 # We need to ensure that Tilt's ERB template uses
 # the same output variable that Padrino's helpers expect.
-Tilt::ERBTemplate.default_output_variable = "@_out_buf"
+Tilt::ERBTemplate.default_output_variable = '@_out_buf'
 
 module Machined
   module Helpers
@@ -11,10 +11,10 @@ module Machined
       # capture blocks where the key is the name
       # of the template.
       CAPTURE_ENGINES = {
-        "Tilt::HamlTemplate"   => :haml,
-        "Tilt::ERBTemplate"    => :erb,
-        "Tilt::ErubisTemplate" => :erubis,
-        "Slim::Template"       => :slim
+        'Tilt::HamlTemplate'   => :haml,
+        'Tilt::ERBTemplate'    => :erb,
+        'Tilt::ErubisTemplate' => :erubis,
+        'Slim::Template'       => :slim
       }
       
       protected

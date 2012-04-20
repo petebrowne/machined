@@ -1,12 +1,12 @@
-require "ostruct"
-require "sprockets"
-require "sprockets-sass"
+require 'ostruct'
+require 'sprockets'
+require 'sprockets-sass'
 
 module Machined
   class Sprocket < Sprockets::Environment
     # Default options for a Machined sprocket.
     DEFAULT_OPTIONS = {
-      :root    => ".",
+      :root    => '.',
       :assets  => false,
       :compile => true
     }.freeze

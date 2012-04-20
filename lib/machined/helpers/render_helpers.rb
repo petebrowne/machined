@@ -1,4 +1,4 @@
-require "pathname"
+require 'pathname'
 
 module Machined
   module Helpers
@@ -7,9 +7,9 @@ module Machined
       # It works exactly like #render_partial, except if you pass the
       # +:collection+ option:
       #
-      #   <%= render "ad", :collection => advertisements %>
+      #   <%= render 'ad', :collection => advertisements %>
       #   # is the same as:
-      #   <%= render_collection advertisements, "ad" %>
+      #   <%= render_collection advertisements, 'ad' %>
       # 
       def render(partial, options = {})
         if collection = options.delete(:collection)
@@ -24,9 +24,9 @@ module Machined
       # of Rails' partial rendering, where the individual objects
       # will be set as local variables based on the name of the partial:
       #
-      #   <%= render_collection advertisements, "ad" %>
+      #   <%= render_collection advertisements, 'ad' %>
       #
-      # This will render the "ad" template and pass the local variable
+      # This will render the 'ad' template and pass the local variable
       # +ad+ to the template for display. An iteration counter will automatically
       # be made available to the template with a name of the form
       # +partial_name_counter+. In the case of the example above, the
@@ -51,21 +51,21 @@ module Machined
       #
       # == Some Examples
       #
-      #   <%= render_partial "account" %>
+      #   <%= render_partial 'account' %>
       #
       # This will look for a template in the views paths with the name
-      # "account" or "_account". The files can be any processable Tilt
-      # template files, like ".erb", ".md", or ".haml" - or just plain ".html".
+      # 'account' or '_account'. The files can be any processable Tilt
+      # template files, like '.erb', '.md', or '.haml' - or just plain '.html'.
       #
-      #   <%= render_partial "account", :locals => { :account => buyer } %>
+      #   <%= render_partial 'account', :locals => { :account => buyer } %>
       #
-      # This will set `buyer` as a local variable named "account". This can
+      # This will set `buyer` as a local variable named 'account'. This can
       # actually be written a few different ways:
       #
-      #   <%= render_partial "account", :account => buyer %>
+      #   <%= render_partial 'account', :account => buyer %>
       #   # Leftover options are assumed to be locals.
-      #   <%= render_partial "account", :object => buyer %>
-      #   # The local variable name "account" is inferred.
+      #   <%= render_partial 'account', :object => buyer %>
+      #   # The local variable name 'account' is inferred.
       #
       # As mentioned above, any options that are not used by #render_partial
       # are assumed to be locals when the +:locals+ option is not set.
@@ -74,11 +74,11 @@ module Machined
       # where the local variable name will be inferred from the partial name.
       # This can be overridden with the +:as+ option:
       #
-      #   <%= render_partial "account", :object => buyer, :as => "user" %>
+      #   <%= render_partial 'account', :object => buyer, :as => 'user' %>
       #
       # This is equivalent to:
       #
-      #   <%= render_partial "account", :locals => { :user => buyer } %>
+      #   <%= render_partial 'account', :locals => { :user => buyer } %>
       #
       def render_partial(partial, options = {})
         template = resolve_partial partial
@@ -110,7 +110,7 @@ module Machined
       
       # Attempts to find a view with the given path,
       # while also looking for a version with a partial-style
-      # name (prefixed with an "_").
+      # name (prefixed with an '_').
       def resolve_partial(path) # :nodoc:
         path = Pathname.new path
         path.absolute? and return path

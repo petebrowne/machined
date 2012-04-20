@@ -1,5 +1,5 @@
-require "yaml"
-require "tilt"
+require 'yaml'
+require 'tilt'
 
 module Machined
   module Processors

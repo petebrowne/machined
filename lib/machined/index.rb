@@ -1,4 +1,4 @@
-require "sprockets"
+require 'sprockets'
 
 module Machined
   # We need to add accessors for the Machined

@@ -1,4 +1,4 @@
-require "spec_helper"
+require 'spec_helper'
 
 describe Machined::Initializable do
   class BasicInitializer
@@ -10,7 +10,7 @@ describe Machined::Initializable do
     BasicInitializer.instance_variable_set :@initializers, nil
   end
   
-  it "runs initializers in order" do
+  it 'runs initializers in order' do
     array = []
     BasicInitializer.initializer(:one) { array << 1 }
     BasicInitializer.initializer(:two) { array << 2 }
@@ -19,7 +19,7 @@ describe Machined::Initializable do
     array.should == [ 1, 2, 3 ]
   end
   
-  it "runs initializers only once" do
+  it 'runs initializers only once' do
     count = 0
     BasicInitializer.initializer(:count) { count += 1 }
     basic = BasicInitializer.new
@@ -28,7 +28,7 @@ describe Machined::Initializable do
     count.should == 1
   end
   
-  it "executes in the instance scope" do
+  it 'executes in the instance scope' do
     BasicInitializer.initializer(:init_count) { @count = 0 }
     BasicInitializer.initializer(:one) { @count += 1 }
     BasicInitializer.initializer(:two) { @count += 1 }
@@ -37,14 +37,14 @@ describe Machined::Initializable do
     basic.count.should == 2
   end
   
-  it "runs the initializers with the given args" do
+  it 'runs the initializers with the given args' do
     BasicInitializer.initializer(:sum) { |*args| @count = args.inject(&:+) }
     basic = BasicInitializer.new
     basic.run_initializers 1, 2, 3
     basic.count.should == 6
   end
   
-  it "adds initializers after specific initializers" do
+  it 'adds initializers after specific initializers' do
     array = []
     BasicInitializer.initializer(:one) { array << 1 }
     BasicInitializer.initializer(:two) { array << 2 }
@@ -53,7 +53,7 @@ describe Machined::Initializable do
     array.should == [ 1, 3, 2 ]
   end
   
-  it "adds initializers before specific initializers" do
+  it 'adds initializers before specific initializers' do
     array = []
     BasicInitializer.initializer(:one) { array << 1 }
     BasicInitializer.initializer(:two) { array << 2 }
@@ -65,10 +65,10 @@ describe Machined::Initializable do
   it "raises an error if the specified initializer doesn't exist" do
     expect {
       BasicInitializer.initializer(:wtf, :after => :omg) { }
-    }.to raise_error("The specified initializer, :omg, does not exist")
+    }.to raise_error('The specified initializer, :omg, does not exist')
     
     expect {
       BasicInitializer.initializer(:omg, :before => :wtf) { }
-    }.to raise_error("The specified initializer, :wtf, does not exist")
+    }.to raise_error('The specified initializer, :wtf, does not exist')
   end
 end

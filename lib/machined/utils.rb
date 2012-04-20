@@ -1,6 +1,6 @@
-require "pathname"
-require "sprockets"
-require "tilt"
+require 'pathname'
+require 'sprockets'
+require 'tilt'
 
 module Machined
   module Utils

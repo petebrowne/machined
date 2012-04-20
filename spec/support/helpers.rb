@@ -1,5 +1,5 @@
-require "pathname"
-require "active_support/core_ext/hash/reverse_merge"
+require 'pathname'
+require 'active_support/core_ext/hash/reverse_merge'
 
 module Machined
   module SpecHelpers
@@ -16,9 +16,9 @@ module Machined
     end
   
     # Returns a fresh context, that can be used to test helpers.
-    def context(logical_path = "application.js", options = {})
+    def context(logical_path = 'application.js', options = {})
       @context ||= begin
-        pathname = options[:pathname] || Pathname.new(File.join("assets", logical_path)).expand_path
+        pathname = options[:pathname] || Pathname.new(File.join('assets', logical_path)).expand_path
         env      = options[:env] || machined.assets
         
         env.context_class.new env, logical_path, pathname
@@ -28,13 +28,13 @@ module Machined
     # Runs the CLI with the given args.
     def machined_cli(args, silence = true)
       capture(:stdout) {
-        Machined::CLI.start args.split(" ")
+        Machined::CLI.start args.split(' ')
       }
     end
     
     # Captures the given stream and returns it:
     #
-    #   stream = capture(:stdout) { puts "Cool" }
+    #   stream = capture(:stdout) { puts 'Cool' }
     #   stream # => "Cool\n"
     #
     def capture(stream)

@@ -1,9 +1,9 @@
-require "spec_helper"
+require 'spec_helper'
 
 describe Machined::Processors::FrontMatterProcessor do
-  it "parses the front matter and adds locals" do
+  it 'parses the front matter and adds locals' do
     within_construct do |c|
-      c.file "pages/index.html.haml", <<-CONTENT.unindent
+      c.file 'pages/index.html.haml', <<-CONTENT.unindent
         ---
         title: Hello
         tags:
@@ -14,23 +14,23 @@ describe Machined::Processors::FrontMatterProcessor do
         = tags.inspect
       CONTENT
       
-      machined.pages["index.html"].to_s.should == <<-CONTENT.unindent
+      machined.pages['index.html'].to_s.should == <<-CONTENT.unindent
         "Hello"
         [1, 2]
       CONTENT
     end
   end
   
-  it "ignores pages without front matter" do
+  it 'ignores pages without front matter' do
     within_construct do |c|
-      c.file "pages/index.html.md", <<-CONTENT.unindent
+      c.file 'pages/index.html.md', <<-CONTENT.unindent
         Title
         ---
         Another Title
         ---
         Content...
       CONTENT
-      machined.pages["index.html"].to_s.should == <<-CONTENT.unindent
+      machined.pages['index.html'].to_s.should == <<-CONTENT.unindent
         <h2>Title</h2>
         
         <h2>Another Title</h2>
