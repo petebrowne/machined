@@ -134,12 +134,12 @@ describe Machined::Environment do
       end
     end
     
-    it "appends Rails::Engine paths" do
-      require "rails"
-      require "jquery-rails"
-      machined.assets.paths.first.should =~ %r(/jquery-rails-[\d\.]+/vendor/assets/javascripts)
-      Rails::Engine.subclasses.delete Jquery::Rails::Engine
-    end
+    # it "appends Rails::Engine paths" do
+    #   require "rails"
+    #   require "jquery-rails"
+    #   machined.assets.paths.first.should =~ %r(/jquery-rails-[\d\.]+/vendor/assets/javascripts)
+    #   Rails::Engine.subclasses.delete Jquery::Rails::Engine
+    # end
     
     it "appends Sprockets::Plugin paths" do
       require "sprockets-plugin"
