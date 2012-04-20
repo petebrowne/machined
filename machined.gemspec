@@ -19,7 +19,6 @@ Gem::Specification.new do |s|
   s.require_paths = ['lib']
 
   s.add_dependency             'sprockets',         '~> 2.4.0'
-  s.add_dependency             'sprockets-plugin',  '~> 0.2.0'
   s.add_dependency             'sprockets-helpers', '~> 0.4.0'
   s.add_dependency             'sprockets-sass',    '~> 0.8.0'
   s.add_dependency             'padrino-helpers',   '~> 0.10.5'
@@ -31,6 +30,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'rack-test',         '~> 0.6.1'
   s.add_development_dependency 'test-construct',    '~> 1.2.0'
   s.add_development_dependency 'unindent',          '~> 1.0'
+  s.add_development_dependency 'sprockets-plugin',  '~> 0.2.1'
   # s.add_development_dependency 'railties',          '~> 3.1.3'
   s.add_development_dependency 'haml'
   s.add_development_dependency 'sass'

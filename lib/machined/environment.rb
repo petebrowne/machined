@@ -1,5 +1,6 @@
 require 'ostruct'
 require 'pathname'
+require 'active_support/cache'
 require 'active_support/core_ext/hash/reverse_merge'
 require 'crush'
 require 'tilt'
@@ -15,6 +16,7 @@ module Machined
       :config_path    => 'machined.rb',
       :output_path    => 'public',
       :environment    => 'development',
+      :cache          => nil,
       :skip_bundle    => false,
       :assets_only    => false,
       :digest_assets  => false,
@@ -116,7 +118,8 @@ module Machined
       
       ENV['BUNDLE_GEMFILE'] ||= root.join('Gemfile').to_s
       if File.exist? ENV['BUNDLE_GEMFILE']
-        require 'bundler'
+        require 'bundler/setup'
+        require 'sprockets'
         Bundler.require :default, config.environment.to_sym
       end
     end
@@ -172,6 +175,20 @@ module Machined
       end
     end
     
+    # Setup the global cache. Defaults to an in memory
+    # caching for development, and a file based cache for production.
+    initializer :configure_cache do
+      if config.cache.nil?
+        if config.environment == 'production'
+          config.cache = :file_store, 'tmp/cache'
+        else
+          config.cache = :memory_store
+        end
+      end
+      
+      config.cache = ActiveSupport::Cache.lookup_store(*config.cache)
+    end
+    
     # Do any configuration to the assets sprockets necessary
     # after the config file has been evaled.
     initializer :configure_assets_sprocket do
@@ -197,6 +214,9 @@ module Machined
       
       # Setup the base URL for the assets (like the Rails asset_prefix)
       assets.config.url = config.assets_url
+      
+      # Use the global cache store
+      assets.cache = config.cache
     end
     
     # Do any configuration to the pages sprockets necessary
@@ -210,6 +230,9 @@ module Machined
       
       # Setup the base URL for the pages
       pages.config.url = config.pages_url
+      
+      # Use the global cache store
+      pages.cache = config.cache
     end
     
     # Do any configuration to the views sprockets necessary
@@ -220,6 +243,9 @@ module Machined
       # Append the configured views paths
       append_path  views, config.views_path
       append_paths views, config.views_paths
+      
+      # Use the global cache store
+      views.cache = config.cache
     end
     
     # Setup the JavaScript and CSS compressors

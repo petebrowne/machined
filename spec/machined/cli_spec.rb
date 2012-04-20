@@ -54,8 +54,8 @@ describe Machined::CLI do
         File.read('my_site/views/layouts/application.html.erb').should == <<-CONTENT.unindent
           <!doctype html>
           <html>
-            <head lang='en'>
-              <meta charset='utf-8'>
+            <head lang="en">
+              <meta charset="utf-8">
               <title><%= title %></title>
               <%= stylesheet_link_tag 'application' %>
               <%= javascript_include_tag 'application' %>
