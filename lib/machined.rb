@@ -6,6 +6,7 @@ module Machined
   autoload :Environment,            'machined/environment'
   autoload :Index,                  'machined/index'
   autoload :Initializable,          'machined/initializable'
+  autoload :Reloader,               'machined/reloader'
   autoload :Server,                 'machined/server'
   autoload :Sprocket,               'machined/sprocket'
   autoload :StaticCompiler,         'machined/static_compiler'
@@ -17,6 +18,10 @@ module Machined
     autoload :OutputHelpers,        'machined/helpers/output_helpers'
     autoload :PageHelpers,          'machined/helpers/page_helpers'
     autoload :RenderHelpers,        'machined/helpers/render_helpers'
+  end
+  
+  module Middleware
+    autoload :Static,               'machined/middleware/static'
   end
   
   module Processors

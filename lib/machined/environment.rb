@@ -66,31 +66,34 @@ module Machined
     # environment.
     attr_reader :config
     
+    # A reference to the full path to the config file.
+    attr_reader :config_path
+    
     # An array of the helpers added to the Context
     # through the `#helpers` method.
     attr_reader :context_helpers
-    
-    # When the Machined environment is compiling static files,
-    # this will reference the `Machined::StaticCompiler` which handles
-    # looping through the available files and generating them.
-    attr_reader :static_compiler
-    
-    # A reference to the root directory the Machined
-    # environment is run from.
-    attr_reader :root
     
     # A reference to the directory the Machined environment
     # compiles its files to.
     attr_reader :output_path
     
-    # An `Array` of the Sprockets environments (actually `Machined::Sprocket`
-    # instances) that are the core of a Machined environment.
-    attr_reader :sprockets
+    # A reference to the root directory the Machined
+    # environment is run from.
+    attr_reader :root
     
     # When the Machined environment is used as a Rack server, this
     # will reference the actual `Machined::Server` instance that handles
     # the requests.
     attr_reader :server
+    
+    # An `Array` of the Sprockets environments (actually `Machined::Sprocket`
+    # instances) that are the core of a Machined environment.
+    attr_reader :sprockets
+    
+    # When the Machined environment is compiling static files,
+    # this will reference the `Machined::StaticCompiler` which handles
+    # looping through the available files and generating them.
+    attr_reader :static_compiler
     
     # Creates a new Machined environment. It sets up three default
     # sprockets:
@@ -104,6 +107,7 @@ module Machined
     def initialize(options = {})
       @config          = OpenStruct.new DEFAULT_OPTIONS.dup.merge(options)
       @root            = Pathname.new(config.root).expand_path
+      @config_path     = root.join config.config_path
       @output_path     = root.join config.output_path
       @sprockets       = []
       @context_helpers = []
@@ -159,8 +163,7 @@ module Machined
     # available at this point, but not fully configured. This is so
     # you can actually configure the sprockets with this file.
     initializer :eval_config_file do
-      config_file = root.join config.config_path
-      instance_eval config_file.read if config_file.exist?
+      instance_eval config_path.read if config_path.exist?
       
       # This could be changed in the config file
       @output_path = root.join config.output_path
@@ -306,7 +309,6 @@ module Machined
     def append_sprocket(name, options = {}, &block)
       create_sprocket(name, options, &block).tap do |sprocket|
         sprockets.push(sprocket).uniq!
-        server and server.remap
       end
     end
     
@@ -315,7 +317,6 @@ module Machined
     def prepend_sprocket(name, options = {}, &block)
       create_sprocket(name, options, &block).tap do |sprocket|
         sprockets.unshift(sprocket).uniq!
-        server and server.remap
       end
     end
     
@@ -325,7 +326,6 @@ module Machined
       if sprocket = get_sprocket(name)
         sprockets.delete sprocket
         set_sprocket(name, nil)
-        server and server.remap
       end
     end
     

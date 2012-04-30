@@ -57,8 +57,6 @@ describe Machined::Server do
       dir = c.directory 'updates'
       dir.file 'new-site.html', "<h1>Hello World</h1>\n"
       
-      get '/'
-      
       machined.append_sprocket :updates, :url => '/updates' do |updates|
         updates.append_path dir
         updates.register_mime_type 'text/html', '.html'
