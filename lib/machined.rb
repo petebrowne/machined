@@ -6,11 +6,11 @@ module Machined
   autoload :Environment,            'machined/environment'
   autoload :Index,                  'machined/index'
   autoload :Initializable,          'machined/initializable'
-  autoload :Reloader,               'machined/reloader'
   autoload :Server,                 'machined/server'
   autoload :Sprocket,               'machined/sprocket'
   autoload :StaticCompiler,         'machined/static_compiler'
   autoload :Utils,                  'machined/utils'
+  autoload :Watcher,                'machined/watcher'
   
   module Helpers
     autoload :AssetTagHelpers,      'machined/helpers/asset_tag_helpers'

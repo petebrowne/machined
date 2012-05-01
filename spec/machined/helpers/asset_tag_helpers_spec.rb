@@ -1,6 +1,8 @@
 require 'spec_helper'
 
 describe Machined::Helpers::AssetTagHelpers do
+  let(:context) { build_context }
+  
   describe '#asset_path' do
     context 'with URIs' do
       it 'returns URIs untouched' do

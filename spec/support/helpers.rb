@@ -16,13 +16,11 @@ module Machined
     end
   
     # Returns a fresh context, that can be used to test helpers.
-    def context(logical_path = 'application.js', options = {})
-      @context ||= begin
-        pathname = options[:pathname] || Pathname.new(File.join('assets', logical_path)).expand_path
-        env      = options[:env] || machined.assets
-        
-        env.context_class.new env, logical_path, pathname
-      end
+    def build_context(logical_path = 'application.js', options = {})
+      pathname = options[:pathname] || Pathname.new('assets').join(logical_path).expand_path
+      env      = options[:env] || machined.assets
+      
+      env.context_class.new env, logical_path, pathname
     end
     
     # Runs the CLI with the given args.
@@ -30,6 +28,15 @@ module Machined
       capture(:stdout) {
         Machined::CLI.start args.split(' ')
       }
+    end
+    
+    # Modifies the given file
+    def modify(file, content = nil)
+      Pathname.new(file).tap do |file|
+        file.open('w') { |f| f.write(content) } if content
+        future = Time.now + 60
+        file.utime future, future
+      end
     end
     
     # Captures the given stream and returns it:

@@ -19,14 +19,14 @@ describe Machined::Initializable do
     array.should == [ 1, 2, 3 ]
   end
   
-  it 'runs initializers only once' do
-    count = 0
-    BasicInitializer.initializer(:count) { count += 1 }
-    basic = BasicInitializer.new
-    basic.run_initializers
-    basic.run_initializers
-    count.should == 1
-  end
+  # it 'runs initializers only once' do
+  #   count = 0
+  #   BasicInitializer.initializer(:count) { count += 1 }
+  #   basic = BasicInitializer.new
+  #   basic.run_initializers
+  #   basic.run_initializers
+  #   count.should == 1
+  # end
   
   it 'executes in the instance scope' do
     BasicInitializer.initializer(:init_count) { @count = 0 }

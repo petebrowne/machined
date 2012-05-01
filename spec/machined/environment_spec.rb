@@ -12,6 +12,15 @@ describe Machined::Environment do
         machined.updates.should be_a(Machined::Sprocket)
       end
     end
+    
+    it 'appends lib directory to the load path' do
+      within_construct do |c|
+        c.file 'machined.rb', 'require "foo"'
+        c.file 'lib/foo.rb', 'class Foo; end'
+        machined
+        defined?(Foo).should == 'constant'
+      end
+    end
   end
   
   describe '#append_sprocket' do
@@ -83,7 +92,7 @@ describe Machined::Environment do
         end
       end
       
-      context.hello.should == 'world'
+      build_context.hello.should == 'world'
     end
     
     it 'adds methods defined in the given module to the Context' do
@@ -93,7 +102,54 @@ describe Machined::Environment do
         end
       end
       machined.helpers helper
-      context.hello.should == 'world'
+      build_context.hello.should == 'world'
+    end
+  end
+  
+  describe '#reload' do
+    it 'knows when helpers are changed' do
+      within_construct do |c|
+        c.file 'machined.rb', 'helpers do; def hello; "hello"; end; end'
+        build_context.hello.should == 'hello'
+      
+        modify 'machined.rb', 'helpers do; def hello; "world"; end; end'
+        machined.reload
+        build_context.hello.should == 'world'
+      end
+    end
+  
+    it 'knows when configuration is changed' do
+      within_construct do |c|
+        c.file 'machined.rb'
+        machined.output_path.should == c.join('public')
+      
+        modify 'machined.rb', 'config.output_path = "output"'
+        machined.reload
+        machined.output_path.should == c.join('output')
+      end
+    end
+  
+    it 'does not re-append sprockets' do
+      within_construct do |c|
+        c.file 'machined.rb'
+        machined.sprockets.length.should == 3
+      
+        modify 'machined.rb', 'config.output_path = "output"'
+        machined.reload
+        machined.sprockets.length.should == 3
+      end
+    end
+  
+    it 're-evaluates assets when configuration changes' do
+      within_construct do |c|
+        c.file 'machined.rb', 'helpers do; def hello; "hello"; end; end'
+        c.file 'pages/index.html.erb', '<%= hello %>'
+        machined.pages['index.html'].to_s.should == 'hello'
+      
+        modify 'machined.rb', 'helpers do; def hello; "world"; end; end'
+        machined.reload
+        machined.pages['index.html'].to_s.should == 'world'
+      end
     end
   end
   
@@ -246,15 +302,15 @@ describe Machined::Environment do
         end
       end
     end
-  end
-  
-  context 'with a js_compressor set' do
-    it 'compresses using that compressor' do
-      within_construct do |c|
-        c.file 'assets/javascripts/main.js', 'var app = {};'
-        c.file 'machined.rb', 'config.js_compressor = :packr'
-        Crush::Packr.should_receive(:compress).with("var app = {};\n").and_return('compressed')
-        machined.assets['main.js'].to_s.should == 'compressed'
+    
+    context 'with a js_compressor set' do
+      it 'compresses using that compressor' do
+        within_construct do |c|
+          c.file 'assets/javascripts/main.js', 'var app = {};'
+          c.file 'machined.rb', 'config.js_compressor = :packr'
+          Crush::Packr.should_receive(:compress).with("var app = {};\n").and_return('compressed')
+          machined.assets['main.js'].to_s.should == 'compressed'
+        end
       end
     end
   end

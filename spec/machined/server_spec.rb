@@ -25,7 +25,7 @@ describe Machined::Server do
     end
   end
   
-  it 'serves up pages as the base url' do
+  it 'serves up pages at the base url' do
     within_construct do |c|
       c.file 'pages/index.html', "<h1>Hello World</h1>\n"
       c.file 'pages/about.html', "<h1>About Us</h1>\n"
@@ -90,6 +90,18 @@ describe Machined::Server do
       get '/'
       last_response.should be_ok
       last_response.body.should == "<h1>Hello World</h1>\n"
+    end
+  end
+  
+  it 'reloads the environment when the configuration changes' do
+    within_construct do |c|
+      file = c.file 'machined.rb', 'helpers do; def hello; "hello"; end; end'
+      c.file 'pages/index.html.erb', '<%= hello %>'
+      
+      get('/').body.should == 'hello'
+      
+      modify file, 'helpers do; def hello; "world"; end; end'
+      get('/').body.should == 'world'
     end
   end
 end

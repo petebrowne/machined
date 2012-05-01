@@ -1,6 +1,8 @@
 require 'spec_helper'
 
 describe Machined::Helpers::LocalsHelpers do
+  let(:context) { build_context }
+  
   describe '#locals=' do
     it 'sets psuedo local variables' do
       context.locals = { :text => 'Hello World', :body => nil }

@@ -15,6 +15,7 @@ module Machined
       :root           => '.',
       :config_path    => 'machined.rb',
       :output_path    => 'public',
+      :lib_path       => 'lib',
       :environment    => 'development',
       :cache          => nil,
       :skip_bundle    => false,
@@ -73,6 +74,9 @@ module Machined
     # through the `#helpers` method.
     attr_reader :context_helpers
     
+    # The path to the lib directory.
+    attr_reader :lib_path
+    
     # A reference to the directory the Machined environment
     # compiles its files to.
     attr_reader :output_path
@@ -109,6 +113,7 @@ module Machined
       @root            = Pathname.new(config.root).expand_path
       @config_path     = root.join config.config_path
       @output_path     = root.join config.output_path
+      @lib_path        = root.join config.lib_path
       @sprockets       = []
       @context_helpers = []
       
@@ -126,6 +131,15 @@ module Machined
         require 'sprockets'
         Bundler.require :default, config.environment.to_sym
       end
+    end
+    
+    # Appends the lib directory to the load path.
+    # Changes to files in this directory will trigger a reload
+    # of the Machined environment.
+    initializer :append_lib_to_load_path do
+      next unless lib_path.exist?
+      
+      $LOAD_PATH << lib_path.to_s unless $LOAD_PATH.include?(lib_path.to_s)
     end
     
     # Create and append the default `assets` sprocket.
@@ -292,6 +306,12 @@ module Machined
     def compile
       @static_compiler ||= StaticCompiler.new self
       static_compiler.compile
+    end
+    
+    # Reloads the environment. This will re-evaluate the config file.
+    def reload
+      config.cache.clear if config.cache.respond_to?(:clear)
+      initialize config.marshal_dump
     end
     
     # Creates a Machined sprocket with the given +name+ and +options+

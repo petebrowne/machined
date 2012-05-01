@@ -60,11 +60,11 @@ module Machined
     # Run each initializer with the given args
     # yielded to each initializer's block.
     def run_initializers(*args)
-      return if @initializers_run
+      # return if @initializers_run
       self.class.initializers.each do |initializer|
         initializer.run self, *args
       end
-      @initializers_run = true
+      # @initializers_run = true
     end
   end
 end
