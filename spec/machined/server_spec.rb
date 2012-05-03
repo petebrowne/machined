@@ -110,9 +110,10 @@ describe Machined::Server do
         c.file 'lib/hello.rb', 'module Hello; def hello; "hello"; end; end'
         c.file 'machined.rb', 'helpers Hello'
         c.file 'pages/index.html.erb', '<%= hello %>'
+        machined :skip_autoloading => false
         get('/').body.should == 'hello'
         
-        c.file 'lib/hello.rb', 'module Hello; def hello; "world"; end; end'
+        modify 'lib/hello.rb', 'module Hello; def hello; "world"; end; end'
         get('/').body.should == 'world'
       end
     end

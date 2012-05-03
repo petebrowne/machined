@@ -123,7 +123,7 @@ module Machined
       if File.exist? ENV['BUNDLE_GEMFILE']
         require 'bundler/setup'
         require 'sprockets'
-        Bundler.require :default, config.environment.to_sym
+        Bundler.require :default, environment.to_sym
       end
     end
     
@@ -131,10 +131,10 @@ module Machined
     # Changes to files in this directory will trigger a reload
     # of the Machined environment.
     initializer :setup_autoloading do
-      next unless lib_path.exist?
+      next if config.skip_autoloading || !lib_path.exist?
       
       require 'active_support/dependencies'
-      ActiveSupport::Dependencies.autoload_paths << lib_path.to_s
+      ActiveSupport::Dependencies.autoload_paths = [lib_path.to_s]
     end
     
     # Create and append the default `assets` sprocket.
@@ -303,10 +303,20 @@ module Machined
       static_compiler.compile
     end
     
-    # Reloads the environment. This will re-evaluate the config file.
+    # Reloads the environment. This will re-evaluate the config file &
+    # clear the current cache.
     def reload
+      # Make sure we have a fresh cache after we reload
       config.cache.clear if config.cache.respond_to?(:clear)
-      initialize config.marshal_dump
+      
+      # Reload dependencies as well, if necessary
+      ActiveSupport::Dependencies.clear if defined?(ActiveSupport::Dependencies)
+      
+      # Use current configuration, but skip bundle and autoloading initializers
+      current_config = config.marshal_dump.dup
+      current_config.merge! :skip_bundle => true#, :skip_autoloading => true)
+      
+      initialize current_config
     end
     
     # Creates a Machined sprocket with the given +name+ and +options+

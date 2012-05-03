@@ -142,15 +142,29 @@ describe Machined::Environment do
         machined.pages['index.html'].to_s.should == 'world'
       end
     end
+    
+    it 'knows when a lib file changes' do
+      within_construct do |c|
+        c.file 'lib/hello.rb', 'module Hello; def hello; "hello"; end; end'
+        c.file 'machined.rb', 'helpers Hello'
+        machined :skip_autoloading => false
+        build_context.hello.should == 'hello'
+        
+        modify 'lib/hello.rb', 'module Hello; def hello; "world"; end; end'
+        machined.reload
+        build_context.hello.should == 'world'
+      end
+    end
   end
   
   describe '#environment' do
     it 'is wrapped in String inquirer' do
-      machined = Machined::Environment.new(:environment => 'development', :skip_bundle => true)
+      machined :environment => 'development'
       machined.environment.development?.should be_true
       machined.environment.production?.should be_false
       machined.environment.test?.should be_false
-      machined = Machined::Environment.new(:environment => 'production', :skip_bundle => true)
+      
+      machined :environment => 'production', :reload => true
       machined.environment.development?.should be_false
       machined.environment.production?.should be_true
       machined.environment.test?.should be_false
@@ -323,6 +337,7 @@ describe Machined::Environment do
     within_construct do |c|
       c.file 'lib/hello.rb', 'module Hello; def hello; "hello"; end; end'
       c.file 'machined.rb', 'helpers Hello'
+      machined :skip_autoloading => false
       build_context.hello.should == 'hello'
     end
   end

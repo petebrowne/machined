@@ -1,4 +1,3 @@
-require 'active_support/dependencies'
 require 'active_support/file_update_checker'
 require 'rack'
 
@@ -24,7 +23,6 @@ module Machined
         
         # Setup file watching using ActiveSupport::FileUpdateChecker
         @reloader = ActiveSupport::FileUpdateChecker.new(files, dirs) do
-          ActiveSupport::Dependencies.clear
           machined.reload
           reload
         end

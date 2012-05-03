@@ -5,7 +5,8 @@ module Machined
   module SpecHelpers
     # Convenience method for creating a new Machined environment
     def machined(config = {})
-      @machined ||= Machined::Environment.new(config.reverse_merge(:skip_bundle => true))
+      @machined = nil if config.delete(:reload)
+      @machined ||= Machined::Environment.new(config.reverse_merge(:skip_bundle => true, :skip_autoloading => true))
     end
     
     # Convenience method for creating a new Machined sprocket,
