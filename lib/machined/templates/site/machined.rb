@@ -1,7 +1,4 @@
-require 'bundler'
-Bundler.require :default, config.environment.to_sym
-
-if config.environment == 'production'
+if environment.production?
   # Compress javascripts and stylesheets
   config.compress = true
   

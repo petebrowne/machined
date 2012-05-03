@@ -104,10 +104,7 @@ describe Machined::CLI do
       within_construct do |c|
         machined_cli 'new my_site'
         File.read('my_site/machined.rb').should == <<-CONTENT.unindent
-          require 'bundler'
-          Bundler.require :default, config.environment.to_sym
-          
-          if config.environment == 'production'
+          if environment.production?
             # Compress javascripts and stylesheets
             config.compress = true
             
