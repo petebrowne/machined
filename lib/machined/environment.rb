@@ -2,12 +2,19 @@ require 'ostruct'
 require 'pathname'
 require 'active_support/cache'
 require 'active_support/core_ext/hash/reverse_merge'
+require 'active_support/core_ext/module/delegation'
+require 'active_support/string_inquirer'
 require 'crush'
 require 'tilt'
 
 module Machined
   class Environment
     include Initializable
+    
+    # Delegate some common configuration accessors
+    # to the config object.
+    delegate :root, :config_path, :output_path, :lib_path, :environment,
+             :to => :config
     
     # Default options for a Machined environment.
     DEFAULT_OPTIONS = {
@@ -67,23 +74,9 @@ module Machined
     # environment.
     attr_reader :config
     
-    # A reference to the full path to the config file.
-    attr_reader :config_path
-    
     # An array of the helpers added to the Context
     # through the `#helpers` method.
     attr_reader :context_helpers
-    
-    # The path to the lib directory.
-    attr_reader :lib_path
-    
-    # A reference to the directory the Machined environment
-    # compiles its files to.
-    attr_reader :output_path
-    
-    # A reference to the root directory the Machined
-    # environment is run from.
-    attr_reader :root
     
     # When the Machined environment is used as a Rack server, this
     # will reference the actual `Machined::Server` instance that handles
@@ -109,13 +102,14 @@ module Machined
     # layouts and partials go.
     #
     def initialize(options = {})
-      @config          = OpenStruct.new DEFAULT_OPTIONS.dup.merge(options)
-      @root            = Pathname.new(config.root).expand_path
-      @config_path     = root.join config.config_path
-      @output_path     = root.join config.output_path
-      @lib_path        = root.join config.lib_path
-      @sprockets       = []
-      @context_helpers = []
+      @config            = OpenStruct.new DEFAULT_OPTIONS.dup.merge(options)
+      @sprockets         = []
+      @context_helpers   = []
+      config.root        = Pathname.new(config.root).expand_path
+      config.config_path = root.join config.config_path
+      config.output_path = root.join config.output_path
+      config.lib_path    = root.join config.lib_path
+      config.environment = ActiveSupport::StringInquirer.new(config.environment)
       
       run_initializers self
     end
@@ -136,10 +130,11 @@ module Machined
     # Appends the lib directory to the load path.
     # Changes to files in this directory will trigger a reload
     # of the Machined environment.
-    initializer :append_lib_to_load_path do
+    initializer :setup_autoloading do
       next unless lib_path.exist?
       
-      $LOAD_PATH << lib_path.to_s unless $LOAD_PATH.include?(lib_path.to_s)
+      require 'active_support/dependencies'
+      ActiveSupport::Dependencies.autoload_paths << lib_path.to_s
     end
     
     # Create and append the default `assets` sprocket.
@@ -180,7 +175,7 @@ module Machined
       instance_eval config_path.read if config_path.exist?
       
       # This could be changed in the config file
-      @output_path = root.join config.output_path
+      config.output_path = root.join config.output_path
       remove_sprocket(:pages) if config.assets_only && @pages
     end
     

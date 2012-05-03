@@ -93,15 +93,28 @@ describe Machined::Server do
     end
   end
   
-  it 'reloads the environment when the configuration changes' do
-    within_construct do |c|
-      file = c.file 'machined.rb', 'helpers do; def hello; "hello"; end; end'
-      c.file 'pages/index.html.erb', '<%= hello %>'
-      
-      get('/').body.should == 'hello'
-      
-      modify file, 'helpers do; def hello; "world"; end; end'
-      get('/').body.should == 'world'
+  context 'reloading' do
+    it 'knows when the configuration changes' do
+      within_construct do |c|
+        c.file 'machined.rb', 'helpers do; def hello; "hello"; end; end'
+        c.file 'pages/index.html.erb', '<%= hello %>'
+        get('/').body.should == 'hello'
+        
+        modify 'machined.rb', 'helpers do; def hello; "world"; end; end'
+        get('/').body.should == 'world'
+      end
+    end
+    
+    it 'knows when a lib file changes' do
+      within_construct do |c|
+        c.file 'lib/hello.rb', 'module Hello; def hello; "hello"; end; end'
+        c.file 'machined.rb', 'helpers Hello'
+        c.file 'pages/index.html.erb', '<%= hello %>'
+        get('/').body.should == 'hello'
+        
+        c.file 'lib/hello.rb', 'module Hello; def hello; "world"; end; end'
+        get('/').body.should == 'world'
+      end
     end
   end
 end

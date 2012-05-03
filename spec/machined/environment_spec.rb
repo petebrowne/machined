@@ -8,17 +8,8 @@ describe Machined::Environment do
           config.output_path = 'site'
           append_sprocket :updates
         CONTENT
-        machined.config.output_path.should == 'site'
+        machined.config.output_path.should == Pathname.new('site').expand_path
         machined.updates.should be_a(Machined::Sprocket)
-      end
-    end
-    
-    it 'appends lib directory to the load path' do
-      within_construct do |c|
-        c.file 'machined.rb', 'require "foo"'
-        c.file 'lib/foo.rb', 'class Foo; end'
-        machined
-        defined?(Foo).should == 'constant'
       end
     end
   end
@@ -150,6 +141,19 @@ describe Machined::Environment do
         machined.reload
         machined.pages['index.html'].to_s.should == 'world'
       end
+    end
+  end
+  
+  describe '#environment' do
+    it 'is wrapped in String inquirer' do
+      machined = Machined::Environment.new(:environment => 'development', :skip_bundle => true)
+      machined.environment.development?.should be_true
+      machined.environment.production?.should be_false
+      machined.environment.test?.should be_false
+      machined = Machined::Environment.new(:environment => 'production', :skip_bundle => true)
+      machined.environment.development?.should be_false
+      machined.environment.production?.should be_true
+      machined.environment.test?.should be_false
     end
   end
   
@@ -312,6 +316,14 @@ describe Machined::Environment do
           machined.assets['main.js'].to_s.should == 'compressed'
         end
       end
+    end
+  end
+  
+  it 'autoloads files from the lib directory' do
+    within_construct do |c|
+      c.file 'lib/hello.rb', 'module Hello; def hello; "hello"; end; end'
+      c.file 'machined.rb', 'helpers Hello'
+      build_context.hello.should == 'hello'
     end
   end
 end

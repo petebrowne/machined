@@ -1,3 +1,5 @@
+require 'active_support/dependencies'
+require 'active_support/file_update_checker'
 require 'rack'
 
 module Machined
@@ -11,10 +13,21 @@ module Machined
     def initialize(machined)
       @machined = machined
       
-      if watch_for_changes?
-        @watcher = Watcher.new
-        @watcher.watch machined.config_path
-        @watcher.watch *Dir[machined.lib_path.join('**/*.rb')]
+      if machined.environment.development?
+        # Configure watchable files
+        files = []
+        files << machined.config_path if machined.config_path.exist?
+        
+        # Configure watchable dirs
+        dirs = {}
+        dirs[machined.lib_path.to_s] = [:rb] if machined.lib_path.exist?
+        
+        # Setup file watching using ActiveSupport::FileUpdateChecker
+        @reloader = ActiveSupport::FileUpdateChecker.new(files, dirs) do
+          ActiveSupport::Dependencies.clear
+          machined.reload
+          reload
+        end
       end
       
       reload
@@ -24,11 +37,7 @@ module Machined
     # should handle the request and then...let it
     # handle it.
     def call(env)
-      @watcher.perform do
-        machined.reload
-        reload
-      end if watch_for_changes?
-      
+      @reloader.execute_if_updated if machined.environment.development?
       @app.call(env)
     end
     
@@ -45,25 +54,19 @@ module Machined
     def to_app # :nodoc:
       Rack::Builder.new.tap do |app|
         app.use Middleware::Static, machined.output_path
-        app.run Rack::URLMap.new(map)
+        app.run Rack::URLMap.new(sprockets_map)
       end
     end
     
     # Maps the Machined environment's current
     # sprockets for use with `Rack::URLMap`.
-    def map # :nodoc:
+    def sprockets_map # :nodoc:
       {}.tap do |map|
         machined.sprockets.each do |sprocket|
           next unless sprocket.compile?
           map[sprocket.config.url] = sprocket
         end
       end
-    end
-    
-    # Returns true if we should watch for
-    # file changes (in development)
-    def watch_for_changes? # :nodoc:
-      machined.config.environment == 'development'
     end
   end
 end
