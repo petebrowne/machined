@@ -18,9 +18,9 @@ Gem::Specification.new do |s|
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ['lib']
 
-  s.add_dependency             'sprockets',         '~> 2.4.0'
-  s.add_dependency             'sprockets-helpers', '~> 0.4.0'
-  s.add_dependency             'sprockets-sass',    '~> 0.8.0'
+  s.add_dependency             'sprockets',         '~> 2.6.0'
+  s.add_dependency             'sprockets-helpers', '~> 0.7.1'
+  s.add_dependency             'sprockets-sass',    '~> 0.9.1'
   s.add_dependency             'padrino-helpers',   '~> 0.10.5'
   s.add_dependency             'activesupport',     '~> 3.2.3'
   s.add_dependency             'i18n',              '~> 0.6.0'

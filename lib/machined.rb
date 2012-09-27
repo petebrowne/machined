@@ -11,7 +11,7 @@ module Machined
   autoload :StaticCompiler,         'machined/static_compiler'
   autoload :Utils,                  'machined/utils'
   autoload :Watcher,                'machined/watcher'
-  
+
   module Helpers
     autoload :AssetTagHelpers,      'machined/helpers/asset_tag_helpers'
     autoload :LocalsHelpers,        'machined/helpers/locals_helpers'
@@ -19,11 +19,12 @@ module Machined
     autoload :PageHelpers,          'machined/helpers/page_helpers'
     autoload :RenderHelpers,        'machined/helpers/render_helpers'
   end
-  
+
   module Middleware
     autoload :Static,               'machined/middleware/static'
+    autoload :RootIndex,            'machined/middleware/root_index'
   end
-  
+
   module Processors
     autoload :FrontMatterProcessor, 'machined/processors/front_matter_processor'
     autoload :LayoutProcessor,      'machined/processors/layout_processor'
