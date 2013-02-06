@@ -8,11 +8,11 @@ module Machined
     # middleware or application. It's basically
     # a simplified version of ActionDispatch::Static.
     class Static
-      def initialize(app, root = '.', cache_control = nil)
+      def initialize(app, root = '.', headers = {})
         @app = app
         @root = File.expand_path(root)
         @compiled_root = /^#{Regexp.escape(@root)}/
-        @file_server = ::Rack::File.new(@root, 'Cache-Control' => cache_control)
+        @file_server = ::Rack::File.new(@root, headers)
       end
 
       def call(env)
