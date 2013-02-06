@@ -9,12 +9,12 @@ module Machined
     # a simplified version of ActionDispatch::Static.
     class Static
       def initialize(app, root = '.', cache_control = nil)
-        @app           = app
-        @root          = File.expand_path(root)
+        @app = app
+        @root = File.expand_path(root)
         @compiled_root = /^#{Regexp.escape(@root)}/
-        @file_server   = ::Rack::File.new(@root, cache_control)
+        @file_server = ::Rack::File.new(@root, 'Cache-Control' => cache_control)
       end
-      
+
       def call(env)
         case env['REQUEST_METHOD']
         when 'GET', 'HEAD'
@@ -24,17 +24,17 @@ module Machined
             return @file_server.call(env)
           end
         end
-        
+
         @app.call(env)
       end
-      
+
       protected
-      
+
       def match?(path)
         full_path = path.empty? ? @root : File.join(@root, path)
-        matches   = Dir[full_path + '{,.html,/index.html}']
-        match     = matches.detect { |f| File.file?(f) }
-        
+        matches = Dir[full_path + '{,.html,/index.html}']
+        match = matches.detect { |f| File.file?(f) }
+
         if match
           ::Rack::Utils.escape match.sub(@compiled_root, '')
         else
