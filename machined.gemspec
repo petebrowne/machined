@@ -19,8 +19,8 @@ Gem::Specification.new do |s|
   s.require_paths = ['lib']
 
   s.add_dependency             'rack',              '~> 1.5.0'
-  s.add_dependency             'sprockets',         '~> 2.6.0'
-  s.add_dependency             'sprockets-helpers', '~> 0.7.1'
+  s.add_dependency             'sprockets',         '~> 2.9.0'
+  s.add_dependency             'sprockets-helpers', '~> 0.8.0'
   s.add_dependency             'sprockets-sass',    '~> 0.9.1'
   s.add_dependency             'padrino-helpers',   '~> 0.10.6'
   s.add_dependency             'activesupport',     '~> 3.2.3'
