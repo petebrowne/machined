@@ -8,13 +8,13 @@ RSpec::Matchers.define :match_paths do |expected|
     expected.map!(&:to_s)
     actual.map!(&:to_s)
     expected.map! { |path| File.join(@root, path) } if @root
-    
+
     actual == expected
   end
-  
+
   chain :with_root do |root|
     @root = root.to_s
   end
-  
+
   diffable
 end

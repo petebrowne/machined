@@ -10,14 +10,14 @@ module Machined
       :assets  => false,
       :compile => true
     }.freeze
-    
+
     # A reference to the Machined environment which
     # created this instance.
     attr_reader :machined
-    
+
     # A reference to the configuration.
     attr_reader :config
-    
+
     # Creates a new Machined sprocket. The API is
     # a bit different than `Sprockets::Environment` to
     # allow for per-Sprockets-environment configuration
@@ -25,12 +25,12 @@ module Machined
     def initialize(machined, options = {})
       @machined = machined
       @config   = OpenStruct.new DEFAULT_OPTIONS.dup.merge(options)
-      
+
       super config.root
-      
+
       @context_class = Class.new Context
     end
-    
+
     # Returns true, if this sprocket should be
     # compiled. Nine times out of ten, you will want
     # your sprocket compiled, but sometimes - like
@@ -39,12 +39,12 @@ module Machined
     def compile?
       config.compile && config.url
     end
-    
+
     # Override to use Machined's Index
     def index
       Index.new(self)
     end
-    
+
     # Loops through the available Tilt templates
     # and registers them as processor engines for
     # Sprockets. By default, Sprockets cherry picks

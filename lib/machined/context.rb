@@ -17,26 +17,26 @@ module Machined
     include Helpers::LocalsHelpers
     include Helpers::PageHelpers
     include Helpers::RenderHelpers
-    
+
     # Override initialize to add helpers
     # from the Machined environment.
     def initialize(*args) # :nodoc:
       super
       add_machined_helpers
     end
-    
+
     # Returns the main Machined environment instance.
     def machined
       environment.machined
     end
-    
+
     # Returns the configuration of the Machined environment.
     def config
       machined.config
     end
-    
+
     protected
-    
+
     # Loops through the helpers added to the Machined
     # environment and adds them to the Context. Supports
     # blocks and Modules.

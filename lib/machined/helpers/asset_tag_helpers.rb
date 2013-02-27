@@ -15,7 +15,7 @@ module Machined
           path_to_asset source, options
         end
       end
-      
+
       # Redefine image_path to work with Sprockets::Helpers.
       def image_path(source, options = {})
         asset_path source, { :dir => 'images' }.merge(options)

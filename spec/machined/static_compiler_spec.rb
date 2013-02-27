@@ -3,10 +3,10 @@ require 'spec_helper'
 describe Machined::StaticCompiler do
   it 'generates all of the static files' do
     within_construct do |c|
-      c.file 'assets/javascripts/application.js',       '//= require _dep'
-      c.file 'assets/javascripts/_dep.js',              'var app = {};'
+      c.file 'assets/javascripts/application.js', '//= require _dep'
+      c.file 'assets/javascripts/_dep.js', 'var app = {};'
       c.file 'assets/stylesheets/application.css.scss', %(@import "dep";\nbody { color: $color; })
-      c.file 'assets/stylesheets/_dep.scss',            '$color: red;'
+      c.file 'assets/stylesheets/_dep.scss', '$color: red;'
       c.file 'assets/images/logo.jpg'
       c.file 'pages/index.html.md.erb', <<-CONTENT.unindent
         ---
@@ -39,6 +39,28 @@ describe Machined::StaticCompiler do
           </body>
         </html>
       CONTENT
+    end
+  end
+
+  it 'generates the files into the correct output path' do
+    within_construct do |c|
+      c.file 'app/assets/javascripts/application.js', '//= require _dep'
+      c.file 'app/assets/javascripts/_dep.js', 'var app = {};'
+      c.file 'app/assets/stylesheets/application.css.scss', %(@import "dep";\nbody { color: $color; })
+      c.file 'app/assets/stylesheets/_dep.scss', '$color: red;'
+      c.file 'app/assets/images/logo.jpg'
+
+      machined(:root => 'app', :output_path => '../output/site').compile
+
+      File.read('output/site/assets/application.js').should == "var app = {};\n"
+      File.read('output/site/assets/application.css').should == "body {\n  color: red; }\n"
+      File.exist?('output/site/assets/logo.jpg').should be_true
+      File.exist?('public/assets/application.js').should be_false
+      File.exist?('public/assets/application.js').should be_false
+      File.exist?('public/assets/logo.jpg').should be_false
+      File.exist?('output/site/application.js').should be_false
+      File.exist?('output/site/application.js').should be_false
+      File.exist?('output/site/logo.jpg').should be_false
     end
   end
 

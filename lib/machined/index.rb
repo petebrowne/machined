@@ -8,15 +8,15 @@ module Machined
     # A reference to the Machined environment which
     # created this instance.
     attr_reader :machined
-  
+
     # A reference to the configuration.
     attr_reader :config
-    
+
     #
     def initialize(environment)
       @machined = environment.machined
       @config   = environment.config
-      
+
       super
     end
   end

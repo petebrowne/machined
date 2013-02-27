@@ -16,9 +16,9 @@ module Machined
         'Tilt::ErubisTemplate' => :erubis,
         'Slim::Template'       => :slim
       }
-      
+
       protected
-      
+
       # Attempts to return the current engine based on
       # the processors for this file. This is used by
       # Padrino's helpers to determine which type of template
@@ -33,7 +33,7 @@ module Machined
             end
           end
         end
-        
+
         @current_engine
       end
     end

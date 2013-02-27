@@ -10,7 +10,7 @@ module Machined
       #   <%= render 'ad', :collection => advertisements %>
       #   # is the same as:
       #   <%= render_collection advertisements, 'ad' %>
-      # 
+      #
       def render(partial, options = {})
         if collection = options.delete(:collection)
           render_collection collection, partial, options
@@ -18,7 +18,7 @@ module Machined
           render_partial partial, options
         end
       end
-      
+
       # Renders the given +collection+ of objects with the given
       # +partial+ template. This follows the same conventions
       # of Rails' partial rendering, where the individual objects
@@ -33,7 +33,7 @@ module Machined
       # template would be fed +ad_counter+.
       def render_collection(collection, partial, options = {})
         return if collection.nil? || collection.empty?
-        
+
         template = resolve_partial partial
         counter  = 0
         collection.inject('') do |output, object|
@@ -41,7 +41,7 @@ module Machined
           output << render_partial(template, options.merge(:object => object, :counter => counter))
         end
       end
-      
+
       # Renders a single +partial+. The primary options are:
       #
       #   * <tt>:locals</tt> - A hash of local variables to use when
@@ -83,12 +83,12 @@ module Machined
       def render_partial(partial, options = {})
         template = resolve_partial partial
         depend_on template
-        
+
         partial_locals = {}
-        
+
         # Temporarily use a different layout (default to no layout)
         partial_locals[:layout] = options.delete(:layout) || false
-        
+
         # Add object with the name of the partial
         # as the local variable name.
         if object = options.delete(:object)
@@ -96,34 +96,34 @@ module Machined
           partial_locals[object_name] = object
           partial_locals["#{object_name}_counter"] = options.delete :counter
         end
-        
+
         # Add locals from leftover options
         if leftover_locals = options.delete(:locals) || options
           partial_locals.merge! leftover_locals
         end
-        
+
         # Now evaluate the partial
         with_locals(partial_locals) { return evaluate template }
       end
-      
+
       protected
-      
+
       # Attempts to find a view with the given path,
       # while also looking for a version with a partial-style
       # name (prefixed with an '_').
       def resolve_partial(path) # :nodoc:
         path = Pathname.new path
         path.absolute? and return path
-        
+
         # First look for the normal path
         machined.views.resolve(path) { |found| return found }
-        
+
         # Then look for the partial-style version
         unless path.basename.to_s =~ /^_/
           partial = path.dirname.join "_#{path.basename}"
           machined.views.resolve(partial) { |found| return found }
         end
-        
+
         raise Sprockets::FileNotFound, "couldn't find file '#{path}'"
       end
     end

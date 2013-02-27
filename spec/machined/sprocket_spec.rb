@@ -6,7 +6,7 @@ describe Machined::Sprocket do
       sprocket = create_sprocket
       sprocket.machined.should be(machined)
     end
-    
+
     it 'sets the root path' do
       sprocket = create_sprocket
       sprocket.root.should == Pathname.new('.').expand_path.to_s
@@ -14,7 +14,7 @@ describe Machined::Sprocket do
       sprocket.root.should == Pathname.new('spec/machined').expand_path.to_s
     end
   end
-  
+
   describe '#context_class' do
     it 'subclasses Machined::Context' do
       sprocket = create_sprocket
@@ -22,7 +22,7 @@ describe Machined::Sprocket do
       sprocket.context_class.should < Machined::Context
     end
   end
-  
+
   describe '#use_all_templates' do
     it 'registers available templates as engines' do
       sprocket = create_sprocket :assets => true

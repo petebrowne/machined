@@ -12,7 +12,7 @@ module Machined
   # I don't want to `require 'rails'` if I don't have to.
   module Initializable
     extend ActiveSupport::Concern
-    
+
     class Initializer < Struct.new(:name, :block)
       # Run's the initializer's +block+ with the given
       # +context+ and yields the given +args+
@@ -21,14 +21,14 @@ module Machined
         context.instance_exec(*args, &block)
       end
     end
-    
+
     module ClassMethods
       # Returns an array of the initializers for
       # this class.
       def initializers
         @initializers ||= []
       end
-      
+
       # Creates a new initializer with the given name.
       # You can optionally pace initializers before or after
       # other initializers using the `:before` and `:after`
@@ -36,7 +36,7 @@ module Machined
       # of the list.
       def initializer(name, options = {}, &block)
         initializer = Initializer.new(name, block)
-        
+
         if after = options[:after]
           initializers.insert initializer_index(after) + 1, initializer
         elsif before = options[:before]
@@ -45,9 +45,9 @@ module Machined
           initializers << initializer
         end
       end
-      
+
       protected
-      
+
       # Returns the index of the initializer with
       # the given name.
       def initializer_index(name) # :nodoc:
@@ -56,7 +56,7 @@ module Machined
         end or raise "The specified initializer, #{name.inspect}, does not exist"
       end
     end
-    
+
     # Run each initializer with the given args
     # yielded to each initializer's block.
     def run_initializers(*args)

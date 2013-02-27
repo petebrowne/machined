@@ -10,18 +10,18 @@ describe Machined::Utils do
       available_templates['.haml'].should be(Tilt::HamlTemplate)
     end
   end
-  
+
   describe '.existent_directories' do
     it 'returns directories that exist in the given path' do
       within_construct do |c|
         c.directory 'dir1'
         c.directory 'dir2'
         c.directory 'dir3'
-        
+
         Machined::Utils.existent_directories(c).should match_paths(%w(dir1 dir2 dir3)).with_root(c)
       end
     end
-    
+
     it 'returns an empty array when the path is not a directory' do
       within_construct do |c|
         Machined::Utils.existent_directories(c.join('blank')).should == []

@@ -12,7 +12,7 @@ module Machined
           machined.config.layout
         end
       end
-      
+
       # Returns the local variable, title, if set. Otherwise
       # return a titleized version of the filename.
       def title
@@ -22,7 +22,7 @@ module Machined
           File.basename(logical_path).titleize
         end
       end
-    
+
       # Returns the URL to this asset, appending the sprocket's URL.
       # For HTML files, this will return pretty URLs.
       def url

@@ -9,7 +9,7 @@ module Machined
       def locals
         @locals ||= ActiveSupport::HashWithIndifferentAccess.new
       end
-      
+
       # Adds psuedo local variables from the given hash, where
       # the key is the name of the variable. This is provided so
       # processors can add local variables without having access
@@ -21,7 +21,7 @@ module Machined
           self.locals.merge! locals
         end
       end
-      
+
       # Temporarily changes the locals. The given +temporary_locals+
       # will be merged into the current locals. After the block is
       # executed, the locals will be restored to their original state.
@@ -31,13 +31,13 @@ module Machined
       ensure
         @locals = old_locals
       end
-      
+
       # Returns true if the given +name+ has been set as a local
       # variable.
       def has_local?(name)
         locals.key? name
       end
-      
+
       def method_missing(method, *args, &block) # :nodoc:
         if args.empty? && has_local?(method)
           locals[method]
@@ -45,7 +45,7 @@ module Machined
           super
         end
       end
-      
+
       def respond_to?(method) # :nodoc:
         super or has_local?(method)
       end

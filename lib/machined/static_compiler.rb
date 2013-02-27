@@ -5,13 +5,13 @@ module Machined
     # A reference to the Machined environment which
     # created this instance.
     attr_reader :machined
-    
+
     # Creates a new instance, which will compile
     # the assets to the given +output_path+.
     def initialize(machined)
       @machined = machined
     end
-    
+
     # Loop through and compile each available
     # asset to the appropriate output path.
     def compile
@@ -21,7 +21,7 @@ module Machined
         sprocket.each_logical_path do |logical_path|
           url = File.join(sprocket.config.url, logical_path)
           next unless compiled_assets[url].nil? && compile?(url)
-          
+
           if asset = sprocket.find_asset(logical_path)
             compiled_assets[url] = write_asset(sprocket, asset)
           end
@@ -29,14 +29,14 @@ module Machined
       end
       compiled_assets
     end
-    
+
     # Determines if we should precompile the asset
     # with the given url. By default, we skip over any
     # files that begin with '_', like partials.
     def compile?(url)
       File.basename(url) !~ /^_/
     end
-    
+
     # Writes the asset to its destination, also
     # writing a gzipped version if necessary.
     def write_asset(environment, asset)
@@ -46,9 +46,9 @@ module Machined
       asset.write_to "#{filename}.gz" if gzip?(filename)
       asset.digest
     end
-    
+
     protected
-    
+
     # Gets the full output path for the given asset.
     # If it's supposed to include a digest, it will return the
     # digest_path.
@@ -56,13 +56,13 @@ module Machined
       path = digest?(environment, asset) ? asset.digest_path : asset.logical_path
       File.join(machined.output_path, environment.config.url, path)
     end
-    
+
     # Determines if we should use the digest_path for the given
     # asset.
     def digest?(environment, asset) # :nodoc:
       machined.config.digest_assets && environment.config.assets
     end
-    
+
     # Determines if we should gzip the asset.
     def gzip?(filename) # :nodoc:
       machined.config.gzip_assets && filename =~ /\.(css|js)$/

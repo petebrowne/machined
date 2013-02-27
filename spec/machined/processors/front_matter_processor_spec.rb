@@ -13,14 +13,14 @@ describe Machined::Processors::FrontMatterProcessor do
         = title.inspect
         = tags.inspect
       CONTENT
-      
+
       machined.pages['index.html'].to_s.should == <<-CONTENT.unindent
         "Hello"
         [1, 2]
       CONTENT
     end
   end
-  
+
   it 'ignores pages without front matter' do
     within_construct do |c|
       c.file 'pages/index.html.md', <<-CONTENT.unindent
@@ -32,9 +32,9 @@ describe Machined::Processors::FrontMatterProcessor do
       CONTENT
       machined.pages['index.html'].to_s.should == <<-CONTENT.unindent
         <h2>Title</h2>
-        
+
         <h2>Another Title</h2>
-        
+
         <p>Content...</p>
       CONTENT
     end

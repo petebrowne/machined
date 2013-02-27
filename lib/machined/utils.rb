@@ -18,7 +18,7 @@ module Machined
         end
       end
     end
-    
+
     # Returns an `Array` of the child directories that
     # exist within the given +path+. If the path itself
     # does not exist, an emtpy array is returned.

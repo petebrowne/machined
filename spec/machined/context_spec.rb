@@ -6,7 +6,7 @@ describe Machined::Context do
       build_context.machined.should be(machined)
     end
   end
-  
+
   describe '#config' do
     it "returns a reference to the Machined environment's configuration" do
       machined.config.layout = 'application'
