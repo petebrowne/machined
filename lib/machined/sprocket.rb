@@ -56,5 +56,11 @@ module Machined
         register_engine ext, template
       end
     end
+
+    # Override the default Sprockets method which incorrectly returns '.htm'.
+    def extension_for_mime_type(type) # :nodoc:
+      return '.html' if type == 'text/html'
+      super
+    end
   end
 end

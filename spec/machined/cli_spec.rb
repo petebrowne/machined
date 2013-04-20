@@ -95,7 +95,7 @@ describe Machined::CLI do
       within_construct do |c|
         machined_cli 'new my_site'
         File.read('my_site/Gemfile').should == <<-CONTENT.unindent
-          source "https://rubygems.org"
+          source 'https://rubygems.org'
 
           gem 'machined', '#{Machined::VERSION}'
 
