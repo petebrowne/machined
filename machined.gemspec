@@ -23,7 +23,6 @@ Gem::Specification.new do |s|
   s.add_dependency             'sprockets',         '~> 2.9.0'
   s.add_dependency             'sprockets-helpers', '~> 1.0.0'
   s.add_dependency             'sprockets-sass',    '~> 1.0.0'
-  # s.add_dependency             'padrino-helpers',   '~> 0.10.6'
   s.add_dependency             'padrino-helpers',   '~> 0.10.7'
   s.add_dependency             'activesupport',     '~> 3.2.3'
   s.add_dependency             'i18n',              '~> 0.6.0'
