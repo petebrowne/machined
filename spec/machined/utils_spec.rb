@@ -18,7 +18,7 @@ describe Machined::Utils do
         c.directory 'dir2'
         c.directory 'dir3'
 
-        Machined::Utils.existent_directories(c).should match_paths(%w(dir1 dir2 dir3)).with_root(c)
+        Machined::Utils.existent_directories(c).sort.should match_paths(%w(dir1 dir2 dir3)).with_root(c)
       end
     end
 
