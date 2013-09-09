@@ -181,7 +181,7 @@ describe Machined::Environment do
         c.directory 'vendor/assets/javascripts'
         c.directory 'vendor/assets/stylesheets'
 
-        machined.assets.paths.should match_paths(%w(
+        machined.assets.paths.sort.should match_paths(%w(
           assets/images
           assets/javascripts
           assets/stylesheets
@@ -199,7 +199,7 @@ describe Machined::Environment do
         c.directory 'assets/js'
         c.directory 'assets/plugins'
 
-        machined.assets.paths.should match_paths(%w(
+        machined.assets.paths.sort.should match_paths(%w(
           assets/css
           assets/img
           assets/js
@@ -227,7 +227,7 @@ describe Machined::Environment do
         plugin = Class.new(Sprockets::Plugin)
         plugin.append_paths_in plugin_dir
 
-        machined.assets.paths.should match_paths(%w(
+        machined.assets.paths.sort.should match_paths(%w(
           plugin/assets/images
           plugin/assets/javascripts
           plugin/assets/stylesheets
