@@ -46,7 +46,7 @@ module Machined
         end
       end
 
-      def respond_to?(method) # :nodoc:
+      def respond_to?(method, *args) # :nodoc:
         super or has_local?(method)
       end
     end
